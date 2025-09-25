@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+
+{% block title %}Painel de Pedidos - Reparo2Eletro{% endblock %}
+
+{% block content %}
+    <div class="header-container fade-in">
+        <h2><i class="fas fa-clipboard-list"></i> Painel de Pedidos de Reparo</h2>
+        <div class="header-actions">
+            <a href="{{ url_for('export') }}" class="btn btn-secondary">
+                <i class="fas fa-file-csv"></i> Exportar Relatório
+            </a>
+            <a href="{{ url_for('add_pedido') }}" class="btn btn-primary">
+                <i class="fas fa-plus"></i> Novo Pedido
+            </a>
+        </div>
+    </div>
+
+
+    <div class="card fade-in">
+        <div class="table-responsive">
+            {% if pedidos %}
+                <table>
+                    <thead>
+                        <tr>
+                            <th><i class="fas fa-hashtag"></i> Pedido</th>
+                            <th><i class="fas fa-user-tie"></i> Técnico</th>
+                            <th><i class="fas fa-tools"></i> Itens Defeituosos</th>
+                            <th><i class="far fa-calendar-alt"></i> Data de Criação</th>
+                            <th><i class="fas fa-cog"></i> Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for pedido in pedidos %}
+                            <tr>
+                                <td><strong>{{ pedido.numero_pedido }}</strong></td>
+                                <td>{{ pedido.tecnico_nome }}</td>
+                                <td>
+                                    {{ pedido.itens_defeituosos or 'Nenhuma' }}
+                                </td>
+                                <td>{{ pedido.data_formatada }}</td>
+                                <td class="actions">
+                                    <div class="btn-group">
+                                        <a href="{{ url_for('view_pedido', id=pedido.id) }}" class="btn btn-sm btn-primary" title="Ver Detalhes">
+                                            <i class="fas fa-eye"></i> Detalhes
+                                        </a>
+                                        <a href="{{ url_for('edit_pedido', id=pedido.id) }}" class="btn btn-sm btn-secondary" title="Editar Pedido">
+                                            <i class="fas fa-edit"></i> Editar
+                                        </a>
+                                        <form action="{{ url_for('delete_pedido', id=pedido.id) }}" method="post" onsubmit="return confirm('Tem certeza que deseja remover este pedido e todas as suas peças?');">
+                                            <button type="submit" class="btn btn-sm btn-danger" title="Remover Pedido">
+                                                <i class="fas fa-trash-alt"></i>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <div class="empty-state">
+                    <i class="fas fa-inbox"></i>
+                    <h3>Nenhum pedido cadastrado</h3>
+                    <p>Comece criando seu primeiro pedido de reparo.</p>
+                    <a href="{{ url_for('add_pedido') }}" class="btn btn-primary">
+                        <i class="fas fa-plus"></i> Criar Novo Pedido
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}
+

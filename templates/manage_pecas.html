@@ -1,0 +1,78 @@
+{% extends 'base.html' %}
+
+{% block title %}Gerenciar Tipos de Peças - Reparo2Eletro{% endblock %}
+
+{% block content %}
+    <div class="header-container fade-in">
+        <h2><i class="fas fa-cogs"></i> Gerenciar Tipos de Peças</h2>
+        <a href="{{ url_for('index') }}" class="btn btn-secondary">
+            <i class="fas fa-arrow-left"></i> Voltar
+        </a>
+    </div>
+
+    <!-- Formulário para Adicionar Novo Tipo de Peça -->
+    <div class="card fade-in mb-4">
+        <div class="card-header">
+            <h3><i class="fas fa-plus-circle"></i> Adicionar Novo Tipo de Peça</h3>
+        </div>
+        <div class="card-body">
+            <form action="{{ url_for('add_peca_tipo') }}" method="post">
+                <div class="form-group">
+                    <label for="nome_peca">Nome do Tipo de Peça</label>
+                    <input type="text" id="nome_peca" name="nome_peca" placeholder="Ex: Placa de Vídeo" required>
+                </div>
+                <div class="form-group">
+                    <label for="defeitos">Defeitos Comuns (separados por vírgula)</label>
+                    <textarea id="defeitos" name="defeitos" placeholder="Ex: Sem vídeo, Artefatos, Superaquecimento" rows="3" required></textarea>
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary"><i class="fas fa-plus"></i> Adicionar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Tabela de Tipos de Peças Existentes -->
+    <div class="card fade-in">
+        <div class="card-header">
+            <h3><i class="fas fa-list-ul"></i> Tipos de Peças Cadastrados</h3>
+        </div>
+        <div class="table-responsive">
+            {% if tipos_pecas %}
+                <table>
+                    <thead>
+                        <tr>
+                            <th><i class="fas fa-microchip"></i> Nome do Tipo de Peça</th>
+                            <th style="width: 100px;"><i class="fas fa-cog"></i> Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for tipo_peca in tipos_pecas %}
+                            <tr>
+                                <td>{{ tipo_peca.nome }}</td>
+                                <td class="actions">
+                                    <div class="btn-group">
+                                        <a href="{{ url_for('edit_peca_tipo', id=tipo_peca.id) }}" class="btn btn-sm btn-edit" title="Editar">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                        <form action="{{ url_for('delete_peca_tipo', id=tipo_peca.id) }}" method="post" onsubmit="return confirm('Atenção! ao excluir este tipo, todos os seus defeitos comuns também serão removidos. Deseja continuar?');">
+                                            <button type="submit" class="btn btn-sm btn-danger" title="Remover">
+                                                <i class="fas fa-trash-alt"></i>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <div class="empty-state">
+                    <i class="fas fa-box-open"></i>
+                    <h3>Nenhum tipo de peça cadastrado</h3>
+                    <p>Use o formulário acima para adicionar o primeiro tipo de peça.</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}
