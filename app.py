@@ -4,11 +4,16 @@ from datetime import datetime
 import io
 import csv
 from openpyxl import Workbook
-from openpyxl.styles import Font, PatternFill
+from openpyxl.styles import Font, PatternFill, Alignment
 from openpyxl.chart import BarChart, PieChart, Reference, Series
 from openpyxl.chart.label import DataLabelList
 from openpyxl.utils import get_column_letter
+from openpyxl.drawing.image import Image
 import collections
+from fpdf import FPDF
+import matplotlib.pyplot as plt
+import matplotlib
+matplotlib.use('Agg')  # Use Agg backend for non-interactive plotting
 
 app = Flask(__name__)
 app.secret_key = 'sua_chave_secreta_aqui'  # Necessário para sessões e mensagens flash
@@ -45,15 +50,23 @@ def dashboard():
 @app.route('/')
 def index():
     db = get_db()
-    # Junta pedidos e peças para listar os itens de cada pedido
-    pedidos = db.execute('''
+    search_numero = request.args.get('numero_pedido', '')
+
+    query = '''
         SELECT p.id, p.numero_pedido, p.tecnico_nome, strftime('%d/%m/%Y %H:%M', p.data_criacao) as data_formatada,
                GROUP_CONCAT(i.nome, ', ') as itens_defeituosos
         FROM pedidos p
         LEFT JOIN pecas i ON p.id = i.pedido_id
-        GROUP BY p.id
-        ORDER BY p.id DESC
-    ''').fetchall()
+    '''
+    params = []
+
+    if search_numero:
+        query += " WHERE p.numero_pedido LIKE ?"
+        params.append(f"%{search_numero}%")
+
+    query += " GROUP BY p.id ORDER BY p.id DESC"
+
+    pedidos = db.execute(query, params).fetchall()
     db.close()
     return render_template('index.html', pedidos=pedidos)
 
@@ -358,6 +371,91 @@ def delete_tecnico(id):
 def export():
     db = get_db()
 
+    # 1. Coleta de dados
+    pecas_list = db.execute('''
+        SELECT p.numero_pedido, p.tecnico_nome, i.nome, i.defeito, STRFTIME('%d/%m/%Y', p.data_criacao) as data_formatada
+        FROM pedidos p JOIN pecas i ON p.id = i.pedido_id
+        ORDER BY p.id DESC
+    ''').fetchall()
+    pie_chart_data = db.execute('SELECT nome || \' - \' || defeito as label, COUNT(*) as total FROM pecas GROUP BY label ORDER BY total DESC').fetchall()
+    bar_chart_stats = db.execute('''
+        SELECT strftime('%Y-%m', p.data_criacao) as mes, i.nome as peca_nome, COUNT(i.id) as total
+        FROM pedidos p JOIN pecas i ON p.id = i.pedido_id
+        GROUP BY mes, peca_nome ORDER BY mes, peca_nome
+    ''').fetchall()
+    db.close()
+
+    # 2. Criação dos gráficos como imagens
+    pie_chart_img = create_pie_chart_image(pie_chart_data)
+    bar_chart_img = create_bar_chart_image(bar_chart_stats)
+
+    # 3. Criação da planilha Excel
+    wb = Workbook()
+    ws = wb.active
+    ws.title = "Relatório"
+
+    # Título
+    ws.merge_cells('A1:G1')
+    title_cell = ws['A1']
+    title_cell.value = 'Relatório de Peças e Estatísticas'
+    title_cell.font = Font(size=16, bold=True)
+    title_cell.alignment = Alignment(horizontal='center')
+    ws.row_dimensions[1].height = 30
+
+    # Inserir gráficos
+    if pie_chart_img:
+        img = Image(pie_chart_img)
+        img.width, img.height = 400, 300
+        ws.add_image(img, 'A3')
+    if bar_chart_img:
+        img = Image(bar_chart_img)
+        img.width, img.height = 400, 300
+        ws.add_image(img, 'E3')
+
+    # Tabela de dados (começando mais para baixo)
+    table_start_row = 20
+    ws.cell(row=table_start_row, column=1, value='Lista de Peças').font = Font(size=12, bold=True)
+
+    headers = ['Pedido', 'Defeito', 'Peça', 'Técnico', 'Data']
+    ws.append(headers)
+    header_font = Font(bold=True, color="FFFFFF")
+    header_fill = PatternFill(start_color="4F46E5", end_color="4F46E5", fill_type="solid")
+    for col_num, header_title in enumerate(headers, 1):
+        cell = ws.cell(row=table_start_row + 1, column=col_num, value=header_title)
+        cell.font = header_font
+        cell.fill = header_fill
+
+    for peca in pecas_list:
+        ws.append([peca['numero_pedido'], peca['defeito'], peca['nome'], peca['tecnico_nome'], peca['data_formatada']])
+
+    # Ajustar largura das colunas
+    for col in ws.columns:
+        max_length = 0
+        column = get_column_letter(col[0].column)
+        for cell in col:
+            try:
+                if len(str(cell.value)) > max_length:
+                    max_length = len(cell.value)
+            except:
+                pass
+        adjusted_width = (max_length + 2)
+        ws.column_dimensions[column].width = adjusted_width
+
+    # --- Finalização ---
+    output = io.BytesIO()
+    wb.save(output)
+    output.seek(0)
+
+    return Response(
+        output,
+        mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        headers={"Content-Disposition": "attachment;filename=relatorio_completo_com_graficos.xlsx"}
+    )
+
+@app.route('/export/pdf')
+def export_pdf():
+    db = get_db()
+
     # 1. Dados para a lista de peças
     pecas_list = db.execute('''
         SELECT p.numero_pedido, p.tecnico_nome, i.nome, i.defeito, STRFTIME('%d/%m/%Y', p.data_criacao) as data_formatada
@@ -382,147 +480,111 @@ def export():
     ''').fetchall()
     db.close()
 
-    wb = Workbook()
-    
-    # --- Aba 1: Relatório de Peças ---
-    ws_report = wb.active
-    ws_report.title = "Relatório de Peças"
-    headers = ['PEDIDO', 'DEFEITO', 'PEÇA', '+', '+', 'TECNICO', 'DATA']
-    ws_report.append(headers)
-    header_font = Font(bold=True, color="FFFFFF")
-    header_fill = PatternFill(start_color="000000", end_color="000000", fill_type="solid") # Cor preta
-    for cell in ws_report[1]:
-        cell.font = header_font
-        cell.fill = header_fill
+    # --- Criação dos Gráficos como Imagens ---
+    pie_chart_img = create_pie_chart_image(pie_chart_data)
+    bar_chart_img = create_bar_chart_image(bar_chart_stats)
+
+    # --- Criação do PDF ---
+    pdf = FPDF()
+    pdf.add_page()
+
+    # Título
+    pdf.set_font('Arial', 'B', 16)
+    pdf.cell(0, 10, 'Relatório de Peças e Estatísticas', 0, 1, 'C')
+    pdf.ln(10)
+
+    # Gráficos
+    if pie_chart_img:
+        pdf.image(pie_chart_img, x=10, y=30, w=90)
+    if bar_chart_img:
+        pdf.image(bar_chart_img, x=110, y=30, w=90)
+    pdf.ln(80) # Espaço para os gráficos
+
+    # Tabela de Peças
+    pdf.set_font('Arial', 'B', 12)
+    pdf.cell(0, 10, 'Lista de Peças', 0, 1, 'L')
+    pdf.ln(5)
+
+    pdf.set_font('Arial', 'B', 10)
+    pdf.cell(30, 10, 'Pedido', 1)
+    pdf.cell(60, 10, 'Defeito', 1)
+    pdf.cell(40, 10, 'Peça', 1)
+    pdf.cell(30, 10, 'Técnico', 1)
+    pdf.cell(30, 10, 'Data', 1)
+    pdf.ln()
+
+    pdf.set_font('Arial', '', 10)
     for peca in pecas_list:
-        ws_report.append([
-            peca['numero_pedido'], 
-            peca['defeito'], 
-            peca['nome'], 
-            '', # Coluna '+' vazia
-            '', # Coluna '+' vazia
-            peca['tecnico_nome'], 
-            peca['data_formatada']
-        ])
-    for col in ws_report.columns:
-        max_length = max(len(str(cell.value or '')) for cell in col)
-        ws_report.column_dimensions[get_column_letter(col[0].column)].width = max_length + 2
-
-    # --- Aba 2: Dashboard com Gráficos ---
-    ws_dashboard = wb.create_sheet(title="Dashboard")
-    ws_data = wb.create_sheet(title="ChartData")
-    ws_data.sheet_state = 'hidden' # Oculta a aba de dados
-
-    # --- Criação do Gráfico de Pizza ---
-    if pie_chart_data:
-        # Calcula o total para as porcentagens
-        total_pecas = sum(row['total'] for row in pie_chart_data)
-        
-        # Cria rótulos personalizados: "Peça - Defeito - Quantidade - %"
-        ws_data.append(['Categoria', 'Total', 'Label_Personalizado'])
-        for row in pie_chart_data:
-            # Separa peça e defeito do label original
-            parts = row['label'].split(' - ')
-            peca = parts[0] if len(parts) > 0 else ''
-            defeito = parts[1] if len(parts) > 1 else ''
-            quantidade = row['total']
-            porcentagem = round((quantidade / total_pecas) * 100, 1)
-            
-            # Cria o label personalizado
-            label_personalizado = f"{peca} - {defeito} - {quantidade} - {porcentagem}%"
-            ws_data.append([label_personalizado, row['total'], label_personalizado])
-        
-        pie = PieChart()
-        labels = Reference(ws_data, min_col=3, min_row=2, max_row=len(pie_chart_data) + 1)  # Usa a coluna dos labels personalizados
-        data = Reference(ws_data, min_col=2, min_row=1, max_row=len(pie_chart_data) + 1)
-        pie.add_data(data, titles_from_data=True)
-        pie.set_categories(labels)
-        pie.title = "Peças por Defeito"
-        pie.height, pie.width = 12, 18
-        pie.legend.position = 'r'
-        pie.style = 26
-        # Remove os rótulos de dados pois as informações já estão na legenda
-        ws_dashboard.add_chart(pie, "A1")
-
-    # --- Criação do Gráfico de Barras ---
-    if bar_chart_stats:
-        # Pivotar os dados
-        bar_data_pivot = collections.defaultdict(lambda: collections.defaultdict(int))
-        all_pecas = sorted(list(set(row['peca_nome'] for row in bar_chart_stats)))
-        all_months = sorted(list(set(row['mes'] for row in bar_chart_stats)))
-        for row in bar_chart_stats:
-            bar_data_pivot[row['mes']][row['peca_nome']] = row['total']
-        
-        # Escrever dados pivotados na aba de dados
-        bar_data_start_row = ws_data.max_row + 2
-        header_bar = ['Mês'] + all_pecas
-        ws_data.append(header_bar)
-        
-        for month in all_months:
-            row_data = [month] + [bar_data_pivot[month].get(peca, 0) for peca in all_pecas]
-            ws_data.append(row_data)
-
-        # Criar o gráfico
-        bar = BarChart()
-        bar.type = "col"
-        bar.style = 10
-        bar.grouping = "clustered"
-        bar.y_axis.title = 'Quantidade'
-
-        # Título dinâmico e formatação
-        if len(all_months) == 1:
-            try:
-                date_obj = datetime.strptime(all_months[0], '%Y-%m')
-                year = date_obj.strftime('%Y')
-                month_number = int(date_obj.strftime('%m'))
-
-                meses_pt_br = {
-                    1: 'JANEIRO', 2: 'FEVEREIRO', 3: 'MARÇO', 4: 'ABRIL',
-                    5: 'MAIO', 6: 'JUNHO', 7: 'JULHO', 8: 'AGOSTO',
-                    9: 'SETEMBRO', 10: 'OUTUBRO', 11: 'NOVEMBRO', 12: 'DEZEMBRO'
-                }
-
-                month_name_pt = meses_pt_br.get(month_number, '')
-                bar.title = f"Volume Mensal de Peças - {month_name_pt} {year}"
-            except ValueError:
-                bar.title = "Volume Mensal de Peças"
-        else:
-            bar.title = "Volume Mensal de Peças"
-
-        # Aumenta o tamanho da fonte do título
-        bar.title.tx.rich.p[0].pPr.defRPr.sz = 1400 # 14pt
-        bar.height, bar.width = 12, 24 # Tamanho reduzido
-        bar.legend = None # Remove a legenda, pois os rótulos estarão nas barras
-        bar.y_axis.majorGridlines = None
-        bar.gapWidth = 100
-
-        # Configura os rótulos de dados para mostrar "Nome da Peça - Valor"
-        bar.dLbls = DataLabelList()
-        bar.dLbls.showVal = True
-        bar.dLbls.showSerName = True
-        bar.dLbls.separator = ' - '
-        bar.dLbls.showCatName = False
-
-
-        # Referenciar os dados de forma explícita para cada série
-        categories_ref = Reference(ws_data, min_col=1, min_row=bar_data_start_row + 1, max_row=ws_data.max_row)
-        bar.set_categories(categories_ref)
-        for i, peca_nome in enumerate(all_pecas):
-            data_ref = Reference(ws_data, min_col=i + 2, min_row=bar_data_start_row + 1, max_row=ws_data.max_row)
-            series = Series(data_ref, title=peca_nome)
-            bar.series.append(series)
-        ws_dashboard.add_chart(bar, "A30")
+        pdf.cell(30, 10, str(peca['numero_pedido']), 1)
+        pdf.cell(60, 10, peca['defeito'], 1)
+        pdf.cell(40, 10, peca['nome'], 1)
+        pdf.cell(30, 10, peca['tecnico_nome'], 1)
+        pdf.cell(30, 10, peca['data_formatada'], 1)
+        pdf.ln()
 
     # --- Finalização ---
     output = io.BytesIO()
-    wb.save(output)
+    pdf.output(output)
     output.seek(0)
 
     return Response(
         output,
-        mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-        headers={"Content-Disposition": "attachment;filename=relatorio_completo_com_graficos.xlsx"}
+        mimetype='application/pdf',
+        headers={"Content-Disposition": "attachment;filename=relatorio.pdf"}
     )
+
+def create_pie_chart_image(data):
+    if not data:
+        return None
+
+    labels = [row['label'] for row in data]
+    sizes = [row['total'] for row in data]
+
+    fig, ax = plt.subplots()
+    ax.pie(sizes, labels=labels, autopct='%1.1f%%', startangle=90)
+    ax.axis('equal')  # Equal aspect ratio ensures that pie is drawn as a circle.
+    plt.title('Peças por Defeito')
+
+    img_buffer = io.BytesIO()
+    plt.savefig(img_buffer, format='png')
+    img_buffer.seek(0)
+    plt.close(fig)
+    return img_buffer
+
+def create_bar_chart_image(data):
+    if not data:
+        return None
+
+    # Pivotar os dados
+    pivot_data = collections.defaultdict(lambda: collections.defaultdict(int))
+    all_pecas = sorted(list(set(row['peca_nome'] for row in data)))
+    all_months = sorted(list(set(row['mes'] for row in data)))
+    for row in data:
+        pivot_data[row['mes']][row['peca_nome']] = row['total']
+
+    fig, ax = plt.subplots(figsize=(10, 6))
+
+    bar_width = 0.2
+    index = range(len(all_months))
+
+    for i, peca in enumerate(all_pecas):
+        peca_data = [pivot_data[month].get(peca, 0) for month in all_months]
+        ax.bar([x + i * bar_width for x in index], peca_data, bar_width, label=peca)
+
+    ax.set_xlabel('Mês')
+    ax.set_ylabel('Quantidade')
+    ax.set_title('Volume Mensal de Peças')
+    ax.set_xticks([x + bar_width * (len(all_pecas) - 1) / 2 for x in index])
+    ax.set_xticklabels(all_months)
+    ax.legend()
+
+    plt.tight_layout()
+
+    img_buffer = io.BytesIO()
+    plt.savefig(img_buffer, format='png')
+    img_buffer.seek(0)
+    plt.close(fig)
+    return img_buffer
 
 @app.route('/api/stats/pecas_por_defeito')
 def pecas_por_defeito_stats():

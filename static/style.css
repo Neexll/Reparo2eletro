@@ -118,7 +118,8 @@ nav {
     gap: 1rem;
 }
 
-.header-actions {
+.header-actions,
+.export-buttons {
     display: flex;
     gap: 1rem;
 }
@@ -456,5 +457,56 @@ select:focus {
     .nav-links {
         gap: 1rem;
     }
+}
+
+.header-container {
+    gap: 1.5rem;
+}
+
+.header-search {
+    margin-left: auto; /* Pushes search bar to the right */
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    min-width: 350px;
+}
+
+.header-search .form-group {
+    flex-grow: 1;
+    margin-bottom: 0;
+}
+
+/* Hide the label for the header search */
+.header-search .form-group label {
+    display: none;
+}
+
+.header-search .form-actions {
+    border: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    gap: 0.5rem;
+}
+
+/* 15. FOOTER */
+footer {
+    padding: 2rem 0;
+    margin-top: 4rem;
+    text-align: center;
+    font-size: 0.9rem;
+    color: var(--color-text-muted);
+    border-top: 1px solid var(--color-border);
+}
+
+footer a {
+    color: var(--color-primary);
+    text-decoration: none;
+    font-weight: 500;
+    transition: var(--transition);
+}
+
+footer a:hover {
+    text-decoration: underline;
 }
 
