@@ -4,10 +4,13 @@
 
 {% block content %}
     <div class="header-container fade-in">
+        <div class="header-actions">
+            <a href="{{ url_for('index') }}" class="btn btn-secondary"><i class="fas fa-arrow-left"></i> Voltar</a>
+        </div>
         <h2><i class="fas fa-chart-line"></i> Dashboard de Estatísticas</h2>
         <div class="export-buttons">
-            <a href="{{ url_for('export') }}" class="btn btn-success"><i class="fas fa-file-excel"></i> Exportar para Excel</a>
-            <a href="{{ url_for('export_pdf') }}" class="btn btn-danger"><i class="fas fa-file-pdf"></i> Exportar para PDF</a>
+            <button data-url="{{ url_for('export') }}" data-filename="relatorio.xlsx" class="btn btn-success btn-download"><i class="fas fa-file-excel"></i> Exportar para Excel</button>
+            <button data-url="{{ url_for('export_pdf') }}" data-filename="relatorio.pdf" class="btn btn-danger btn-download"><i class="fas fa-file-pdf"></i> Exportar para PDF</button>
         </div>
     </div>
 
@@ -31,7 +34,40 @@
 
 {% block scripts %}
 <script>
+    async function downloadReport(url, defaultFilename) {
+        try {
+            const response = await fetch(url);
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            const blob = await response.blob();
+            const reader = new FileReader();
+            reader.readAsDataURL(blob);
+            reader.onloadend = async () => {
+                const base64data = reader.result.split(',')[1];
+                // Chama a função Python exposta para salvar o arquivo
+                const result = await window.pywebview.api.save_file(base64data, defaultFilename);
+                if (result.status === 'error') {
+                    alert(`Erro ao salvar o arquivo: ${result.message}`);
+                }
+            };
+        } catch (error) {
+            console.error('Erro ao baixar o relatório:', error);
+            alert('Ocorreu um erro ao baixar o relatório. Verifique o console para mais detalhes.');
+        }
+    }
+</script>
+<script>
 document.addEventListener('DOMContentLoaded', function() {
+    // Event listener for the new download buttons
+    document.querySelectorAll('.btn-download').forEach(button => {
+        button.addEventListener('click', function() {
+            const url = this.dataset.url;
+            const filename = this.dataset.filename;
+            downloadReport(url, filename);
+        });
+    });
+
     // Registrar o plugin de datalabels globalmente
     Chart.register(ChartDataLabels);
 

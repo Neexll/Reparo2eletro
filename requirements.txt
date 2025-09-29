@@ -6,3 +6,6 @@ itsdangerous==2.0.1
 click==8.0.1
 fpdf2
 matplotlib
+pywebview
+requests
+pyinstaller
