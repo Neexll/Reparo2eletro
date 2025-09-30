@@ -50,11 +50,12 @@
                 reader.onloadend = async () => {
                     const base64data = reader.result.split(',')[1];
                     const result = await window.pywebview.api.save_file(base64data, defaultFilename);
-                    if (result.status === 'error') {
-                        alert(`Erro ao salvar o arquivo: ${result.message}`);
-                    } else {
+                    if (result.status === 'success') {
                         alert(`Arquivo salvo com sucesso!`);
+                    } else if (result.status === 'error') {
+                        alert(`Erro ao salvar o arquivo: ${result.message}`);
                     }
+                    // Se status === 'cancelled', não faz nada (usuário cancelou)
                 };
             } else {
                 // Modo navegador (download padrão)
