@@ -1,0 +1,212 @@
+╔═══════════════════════════════════════════════════════════════════════════╗
+║                                                                           ║
+║               📂 ÍNDICE DE ARQUIVOS - REPARO2ELETRO                      ║
+║                      Guia de Servidor da Empresa                          ║
+║                                                                           ║
+╚═══════════════════════════════════════════════════════════════════════════╝
+
+
+═══════════════════════════════════════════════════════════════════════════
+  🎯 ARQUIVOS PRINCIPAIS (COMECE POR AQUI)
+═══════════════════════════════════════════════════════════════════════════
+
+  📄 COMECE_AQUI.txt
+     └─ Guia de início rápido em 3 passos
+     └─ LEIA ESTE PRIMEIRO!
+
+  📄 GUIA_RAPIDO.txt
+     └─ Guia visual completo com solução de problemas
+     └─ Recomendado para iniciantes
+
+  📄 GUIA_INSTALACAO_SERVIDOR.md
+     └─ Documentação técnica completa
+     └─ Para usuários avançados
+
+
+═══════════════════════════════════════════════════════════════════════════
+  🔧 SCRIPTS DE INSTALAÇÃO E CONFIGURAÇÃO
+═══════════════════════════════════════════════════════════════════════════
+
+  🔹 instalar_servidor.bat
+     └─ Instalação automática completa
+     └─ Cria ambiente virtual e instala dependências
+     └─ Execute este PRIMEIRO
+
+  🔹 configurar_firewall.bat
+     └─ Libera porta 5000 no firewall
+     └─ Execute como ADMINISTRADOR
+
+  🔹 testar_configuracao.bat
+     └─ Verifica se tudo está OK
+     └─ Use para diagnóstico de problemas
+
+
+═══════════════════════════════════════════════════════════════════════════
+  🚀 SCRIPTS PARA INICIAR O SERVIDOR
+═══════════════════════════════════════════════════════════════════════════
+
+  🟢 start_server_network.bat
+     └─ Atalho simples para iniciar o servidor
+     └─ Clique 2x para executar
+     └─ RECOMENDADO para uso diário
+
+  🟢 server.py
+     └─ Servidor Flask simples
+     └─ Execute: python server.py
+     └─ Bom para poucos usuários (1-10)
+
+  🟢 server_production.py
+     └─ Servidor robusto com Waitress
+     └─ Execute: python server_production.py
+     └─ RECOMENDADO para muitos usuários (10+)
+     └─ Requer: pip install waitress
+
+
+═══════════════════════════════════════════════════════════════════════════
+  👥 ARQUIVOS PARA FUNCIONÁRIOS
+═══════════════════════════════════════════════════════════════════════════
+
+  🔹 criar_atalho_funcionario.bat
+     └─ Cria atalho automaticamente
+     └─ Detecta IP do servidor
+     └─ Gera arquivo para distribuir
+
+  🔹 EXEMPLO_ATALHO_FUNCIONARIOS.html
+     └─ Exemplo de atalho HTML
+     └─ Edite e substitua o IP
+     └─ Copie para desktop dos funcionários
+
+
+═══════════════════════════════════════════════════════════════════════════
+  💾 BACKUP E MANUTENÇÃO
+═══════════════════════════════════════════════════════════════════════════
+
+  🔹 fazer_backup.bat
+     └─ Cria backup do banco de dados
+     └─ Salva em pasta: backups/
+     └─ Use regularmente!
+
+
+═══════════════════════════════════════════════════════════════════════════
+  📋 DEPENDÊNCIAS
+═══════════════════════════════════════════════════════════════════════════
+
+  📦 requirements.txt
+     └─ Dependências básicas
+     └─ Para modo desktop e servidor simples
+
+  📦 requirements_production.txt
+     └─ Dependências + Waitress
+     └─ Para servidor robusto
+     └─ RECOMENDADO para produção
+
+
+═══════════════════════════════════════════════════════════════════════════
+  📖 DOCUMENTAÇÃO
+═══════════════════════════════════════════════════════════════════════════
+
+  📄 README_SERVIDOR.txt
+     └─ Resumo de funcionalidades
+     └─ Visão geral do sistema
+
+  📄 GUIA_INSTALACAO_SERVIDOR.md
+     └─ Guia técnico completo
+     └─ Configurações avançadas
+     └─ Solução de problemas detalhada
+
+  📄 INDICE_ARQUIVOS.txt (ESTE ARQUIVO)
+     └─ Lista e descrição de todos os arquivos
+
+
+═══════════════════════════════════════════════════════════════════════════
+  ⚙️ ARQUIVOS DO SISTEMA (NÃO MEXA)
+═══════════════════════════════════════════════════════════════════════════
+
+  app.py              - Aplicação Flask principal
+  desktop.py          - Modo desktop (uso local)
+  database.db         - Banco de dados SQLite
+  schema.sql          - Estrutura do banco de dados
+  
+  Pastas:
+  ├─ templates/       - Arquivos HTML
+  ├─ static/          - CSS, JS, imagens
+  ├─ venv/            - Ambiente virtual Python
+  └─ backups/         - Backups do banco de dados
+
+
+═══════════════════════════════════════════════════════════════════════════
+  🎬 FLUXO DE TRABALHO RECOMENDADO
+═══════════════════════════════════════════════════════════════════════════
+
+  CONFIGURAÇÃO INICIAL (Faça UMA vez):
+  
+    1. 📖 Leia: COMECE_AQUI.txt
+    2. 🔧 Execute: instalar_servidor.bat
+    3. 🔓 Execute como Admin: configurar_firewall.bat
+    4. ✅ Execute: testar_configuracao.bat
+    5. 👥 Execute: criar_atalho_funcionario.bat
+    6. 📤 Distribua o atalho para funcionários
+
+
+  USO DIÁRIO:
+  
+    MANHÃ:
+    1. 🚀 Clique 2x em: start_server_network.bat
+    2. 📝 Anote a URL se necessário
+    3. ✅ Mantenha a janela aberta
+
+    NOITE:
+    1. ⏹️ Pressione Ctrl+C no terminal
+    2. 💾 Execute: fazer_backup.bat (recomendado semanalmente)
+
+
+  PARA MUITOS USUÁRIOS (Performance):
+  
+    1. Abra terminal (cmd) na pasta
+    2. Digite: venv\Scripts\activate
+    3. Digite: python server_production.py
+
+
+═══════════════════════════════════════════════════════════════════════════
+  🔍 ENCONTRAR RAPIDAMENTE
+═══════════════════════════════════════════════════════════════════════════
+
+  "Como instalar?"
+  ➜ COMECE_AQUI.txt ou instalar_servidor.bat
+
+  "Como iniciar o servidor?"
+  ➜ start_server_network.bat
+
+  "Como dar acesso aos funcionários?"
+  ➜ criar_atalho_funcionario.bat
+
+  "Algo deu errado!"
+  ➜ testar_configuracao.bat e GUIA_RAPIDO.txt
+
+  "Como fazer backup?"
+  ➜ fazer_backup.bat
+
+  "Preciso de mais detalhes técnicos"
+  ➜ GUIA_INSTALACAO_SERVIDOR.md
+
+  "Qual a diferença entre os servidores?"
+  ➜ server.py = Simples (1-10 usuários)
+  ➜ server_production.py = Robusto (10+ usuários)
+
+
+═══════════════════════════════════════════════════════════════════════════
+  📞 SUPORTE
+═══════════════════════════════════════════════════════════════════════════
+
+  Para problemas técnicos:
+  
+  1. Execute: testar_configuracao.bat
+  2. Consulte: GUIA_RAPIDO.txt (seção Problemas Comuns)
+  3. Leia: GUIA_INSTALACAO_SERVIDOR.md (Solução de Problemas)
+
+
+═══════════════════════════════════════════════════════════════════════════
+
+                  Versão: 1.0 | Data: 30/09/2025
+
+═══════════════════════════════════════════════════════════════════════════

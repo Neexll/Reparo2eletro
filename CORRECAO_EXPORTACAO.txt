@@ -1,0 +1,196 @@
+╔═══════════════════════════════════════════════════════════════════════════╗
+║                                                                           ║
+║           CORREÇÃO: BOTÕES DE EXPORTAÇÃO EXCEL E PDF                     ║
+║                                                                           ║
+╚═══════════════════════════════════════════════════════════════════════════╝
+
+
+🚨 PROBLEMA IDENTIFICADO:
+
+Os botões "Exportar para Excel" e "Exportar para PDF" no Dashboard
+não estavam funcionando.
+
+
+═══════════════════════════════════════════════════════════════════════════
+  ✅ CAUSA DO PROBLEMA
+═══════════════════════════════════════════════════════════════════════════
+
+O código JavaScript estava tentando usar a API do pywebview
+(window.pywebview.api.save_file) que só existe quando o app
+roda como executável.
+
+Quando rodava no navegador normal, essa API não existia e os
+botões não faziam nada.
+
+
+═══════════════════════════════════════════════════════════════════════════
+  🔧 SOLUÇÃO IMPLEMENTADA
+═══════════════════════════════════════════════════════════════════════════
+
+✅ Arquivo Corrigido: templates/dashboard.html
+
+A função downloadReport() foi atualizada para:
+
+1. DETECTAR O AMBIENTE:
+   - Se está no pywebview (executável) → usa API do pywebview
+   - Se está no navegador → usa download padrão HTML5
+
+2. FUNCIONAMENTO:
+   - Pywebview: Abre janela para escolher onde salvar
+   - Navegador: Faz download direto para pasta Downloads
+
+
+═══════════════════════════════════════════════════════════════════════════
+  🧪 COMO TESTAR
+═══════════════════════════════════════════════════════════════════════════
+
+TESTE 1: No Navegador (Agora)
+──────────────────────────────
+
+1. Execute: python desktop.py
+   (ou start_server.bat)
+
+2. Abra: http://127.0.0.1:5000/dashboard
+
+3. Clique em "Exportar para Excel"
+   ✅ Arquivo deve baixar para pasta Downloads
+
+4. Clique em "Exportar para PDF"
+   ✅ Arquivo deve baixar para pasta Downloads
+
+
+TESTE 2: No Executável (Após Compilar)
+───────────────────────────────────────
+
+1. Recompile: BUILD_EXECUTAVEL.bat
+
+2. Execute: dist_servidor\Reparo2Eletro.exe
+
+3. Vá para Dashboard
+
+4. Clique em "Exportar para Excel"
+   ✅ Janela de salvar arquivo deve abrir
+
+5. Clique em "Exportar para PDF"
+   ✅ Janela de salvar arquivo deve abrir
+
+
+═══════════════════════════════════════════════════════════════════════════
+  📋 O QUE FOI ALTERADO NO CÓDIGO
+═══════════════════════════════════════════════════════════════════════════
+
+ANTES (não funcionava no navegador):
+────────────────────────────────────
+
+async function downloadReport(url, defaultFilename) {
+    // ...
+    const result = await window.pywebview.api.save_file(...);
+    // ❌ Erro: window.pywebview não existe no navegador
+}
+
+
+DEPOIS (funciona em ambos):
+────────────────────────────
+
+async function downloadReport(url, defaultFilename) {
+    // ...
+    if (window.pywebview && window.pywebview.api) {
+        // Modo executável (pywebview)
+        await window.pywebview.api.save_file(...);
+    } else {
+        // Modo navegador (download padrão)
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = defaultFilename;
+        a.click();
+    }
+}
+
+
+═══════════════════════════════════════════════════════════════════════════
+  🎯 PRÓXIMOS PASSOS
+═══════════════════════════════════════════════════════════════════════════
+
+1. TESTAR AGORA NO NAVEGADOR:
+
+   python desktop.py
+   
+   Acesse: http://127.0.0.1:5000/dashboard
+   
+   Teste os botões de exportação
+
+
+2. RECOMPILAR PARA VERSÃO FINAL:
+
+   BUILD_EXECUTAVEL.bat
+   
+   Aguarde 15-20 minutos
+   
+   Teste: dist_servidor\Reparo2Eletro.exe
+
+
+3. DISTRIBUIR:
+
+   Copie pasta dist_servidor para onde quiser usar!
+
+
+═══════════════════════════════════════════════════════════════════════════
+  📁 ARQUIVOS EXPORTADOS
+═══════════════════════════════════════════════════════════════════════════
+
+Excel (relatorio.xlsx):
+• Gráfico de pizza (peças por defeito)
+• Gráfico de barras (volume mensal)
+• Tabela com todas as peças
+
+PDF (relatorio.pdf):
+• Gráfico de pizza (peças por defeito)
+• Gráfico de barras (volume mensal)
+• Tabela com todas as peças
+
+
+═══════════════════════════════════════════════════════════════════════════
+  🆘 RESOLUÇÃO DE PROBLEMAS
+═══════════════════════════════════════════════════════════════════════════
+
+❌ Botão não faz nada:
+→ Abra o Console do navegador (F12)
+→ Veja se há erros JavaScript
+→ Verifique se há dados no banco (pedidos e peças)
+
+❌ Erro 500 ao exportar:
+→ Verifique se database.db existe e tem dados
+→ Execute: python init_db.py
+→ Adicione alguns pedidos antes de exportar
+
+❌ Arquivo vazio:
+→ Certifique-se que há pedidos cadastrados
+→ Vá em "Pedidos" e adicione alguns
+→ Tente exportar novamente
+
+❌ Download não inicia:
+→ Verifique bloqueador de pop-ups do navegador
+→ Permita downloads do site
+→ Tente em modo anônimo
+
+
+═══════════════════════════════════════════════════════════════════════════
+  💡 RESUMO
+═══════════════════════════════════════════════════════════════════════════
+
+PROBLEMA: Botões de exportação não funcionavam
+
+CAUSA: Código só funcionava no executável, não no navegador
+
+SOLUÇÃO: Detectar ambiente e usar método apropriado
+
+RESULTADO: Agora funciona em ambos! ✅
+
+AÇÃO: Teste agora com python desktop.py
+
+
+═══════════════════════════════════════════════════════════════════════════
+
+                    Versão: 1.0 | Data: 30/09/2025
+
+═══════════════════════════════════════════════════════════════════════════

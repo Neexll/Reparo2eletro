@@ -1,0 +1,151 @@
+╔═══════════════════════════════════════════════════════════════════════════╗
+║                                                                           ║
+║           ERRO: INTERNAL SERVER ERROR (500)                              ║
+║                    Solução Rápida                                         ║
+║                                                                           ║
+╚═══════════════════════════════════════════════════════════════════════════╝
+
+
+🚨 PROBLEMA:
+
+Ao abrir o aplicativo e clicar em "Pedidos" aparece:
+"Internal Server Error"
+
+
+═══════════════════════════════════════════════════════════════════════════
+  ✅ SOLUÇÃO (ATUALIZADO)
+═══════════════════════════════════════════════════════════════════════════
+
+Os arquivos desktop_app.py e server_production.py foram ATUALIZADOS
+para criar o banco de dados automaticamente!
+
+PRÓXIMOS PASSOS:
+
+1. RECOMPILAR OS EXECUTÁVEIS:
+
+   Execute: BUILD_EXECUTAVEL.bat
+   
+   (Isso vai recriar os .exe com o código atualizado)
+
+
+2. TESTAR ANTES DE COMPILAR (opcional):
+
+   python desktop_app.py
+   
+   O aplicativo agora cria o banco automaticamente!
+
+
+═══════════════════════════════════════════════════════════════════════════
+  📋 O QUE FOI CORRIGIDO
+═══════════════════════════════════════════════════════════════════════════
+
+✅ desktop_app.py:
+   - Agora verifica se database.db existe
+   - Se não existir, cria automaticamente usando schema.sql
+   - Se existir mas estiver vazio, recria as tabelas
+
+✅ server_production.py:
+   - Mesma funcionalidade para o servidor de rede
+   - Inicializa banco antes de iniciar servidor
+
+✅ Diretório correto:
+   - Executáveis agora usam diretório correto
+   - database.db fica na mesma pasta do .exe
+
+
+═══════════════════════════════════════════════════════════════════════════
+  ⚡ SOLUÇÃO RÁPIDA (SE JÁ TEM O EXECUTÁVEL)
+═══════════════════════════════════════════════════════════════════════════
+
+Se você já tem o executável e não quer recompilar:
+
+1. Copie o arquivo database.db da pasta do projeto 
+   para a pasta do executável:
+
+   Origem: C:\Users\Micro\Desktop\Reparo2eletro\database.db
+   Destino: (mesma pasta do Reparo2Eletro.exe)
+
+
+2. Se não tiver database.db, crie manualmente:
+
+   a) Instale Python SQLite Browser ou use Python:
+   
+   python -c "import sqlite3; conn = sqlite3.connect('database.db'); conn.executescript(open('schema.sql').read()); conn.close(); print('Banco criado!')"
+
+
+═══════════════════════════════════════════════════════════════════════════
+  🔄 PROCESSO COMPLETO
+═══════════════════════════════════════════════════════════════════════════
+
+1. Atualizar código (JÁ FEITO! ✅)
+   
+2. Recompilar executáveis:
+   
+   Execute: BUILD_EXECUTAVEL.bat
+   Aguarde: 15-20 minutos
+
+
+3. Testar:
+   
+   dist_servidor\Reparo2Eletro.exe
+   
+   Agora deve funcionar sem erro 500!
+
+
+═══════════════════════════════════════════════════════════════════════════
+  📁 ESTRUTURA DO BANCO
+═══════════════════════════════════════════════════════════════════════════
+
+O banco database.db contém as seguintes tabelas:
+
+• clientes
+• pecas
+• tipos_pecas  
+• tecnicos
+• pedidos
+• pedidos_pecas
+
+Se alguma estiver faltando, o erro 500 acontece.
+
+A nova versão cria TODAS automaticamente!
+
+
+═══════════════════════════════════════════════════════════════════════════
+  🆘 SE AINDA DER ERRO
+═══════════════════════════════════════════════════════════════════════════
+
+1. Verifique se database.db está na mesma pasta do .exe
+
+2. Verifique se database.db tem dados:
+   - Tamanho > 20 KB = OK
+   - Tamanho < 10 KB = Vazio (precisa recriar)
+
+3. Delete database.db e execute o .exe novamente
+   (ele criará automaticamente)
+
+4. Se continuar com erro, execute de um terminal
+   para ver as mensagens de erro:
+
+   cmd
+   cd caminho\para\dist_servidor
+   Reparo2Eletro.exe
+
+
+═══════════════════════════════════════════════════════════════════════════
+  💡 RESUMO
+═══════════════════════════════════════════════════════════════════════════
+
+CAUSA: Faltava banco de dados ou tabelas
+
+SOLUÇÃO: Código atualizado para criar automaticamente
+
+AÇÃO: Recompile executáveis com BUILD_EXECUTAVEL.bat
+
+RESULTADO: Erro 500 resolvido! ✅
+
+
+═══════════════════════════════════════════════════════════════════════════
+
+                    Versão: 1.1 | Data: 30/09/2025
+
+═══════════════════════════════════════════════════════════════════════════

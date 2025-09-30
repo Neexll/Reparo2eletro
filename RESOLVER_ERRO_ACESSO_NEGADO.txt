@@ -1,0 +1,174 @@
+╔═══════════════════════════════════════════════════════════════════════════╗
+║                                                                           ║
+║            ERRO: ACESSO NEGADO AO CRIAR EXECUTÁVEL                       ║
+║                    Solução Rápida                                         ║
+║                                                                           ║
+╚═══════════════════════════════════════════════════════════════════════════╝
+
+
+🚨 PROBLEMA:
+
+Ao executar BUILD_EXECUTAVEL.bat aparece:
+
+  Erro: [WinError 5] Acesso negado: 'dist_servidor\\Reparo2Eletro.exe'
+
+
+═══════════════════════════════════════════════════════════════════════════
+  🔧 SOLUÇÃO RÁPIDA (OPÇÃO 1)
+═══════════════════════════════════════════════════════════════════════════
+
+1. Execute: LIMPAR_BUILD.bat
+
+2. Aguarde limpar tudo
+
+3. Execute novamente: BUILD_EXECUTAVEL.bat
+
+✅ Pronto!
+
+
+═══════════════════════════════════════════════════════════════════════════
+  🔧 SOLUÇÃO MANUAL (OPÇÃO 2)
+═══════════════════════════════════════════════════════════════════════════
+
+1. FECHAR TUDO:
+   
+   • Feche o Windows Explorer (pasta dist_servidor)
+   • Feche Reparo2Eletro.exe se estiver aberto
+   • Feche qualquer terminal/cmd aberto
+   • Feche o antivírus temporariamente
+
+
+2. DELETAR PASTAS:
+   
+   Abra a pasta do projeto e DELETE manualmente:
+   
+   ├─ build\
+   ├─ dist\
+   └─ dist_servidor\
+   
+   (Use Shift+Delete para forçar)
+
+
+3. EXECUTAR NOVAMENTE:
+   
+   BUILD_EXECUTAVEL.bat
+
+
+═══════════════════════════════════════════════════════════════════════════
+  🔧 SOLUÇÃO ANTIVÍRUS (OPÇÃO 3)
+═══════════════════════════════════════════════════════════════════════════
+
+O antivírus pode estar bloqueando. Adicione EXCEÇÃO para:
+
+Windows Defender:
+  1. Abra: Segurança do Windows
+  2. Proteção contra vírus e ameaças
+  3. Gerenciar configurações
+  4. Exclusões > Adicionar ou remover exclusões
+  5. Adicionar pasta: C:\Users\Micro\Desktop\Reparo2eletro\
+  6. Tente novamente
+
+Outros Antivírus:
+  • Avast, AVG, Norton, etc.
+  • Procure "Exclusões" ou "Exceções"
+  • Adicione a pasta do projeto
+
+
+═══════════════════════════════════════════════════════════════════════════
+  🔧 SOLUÇÃO PERMISSÕES (OPÇÃO 4)
+═══════════════════════════════════════════════════════════════════════════
+
+1. Clique direito na pasta: Reparo2eletro
+
+2. Propriedades > Segurança
+
+3. Editar > Seu usuário
+
+4. Marcar: Controle Total
+
+5. Aplicar > OK
+
+6. Tente novamente
+
+
+═══════════════════════════════════════════════════════════════════════════
+  💡 CAUSAS COMUNS
+═══════════════════════════════════════════════════════════════════════════
+
+✗ Windows Explorer aberto na pasta dist_servidor
+✗ Reparo2Eletro.exe em execução
+✗ Antivírus bloqueando arquivos .exe
+✗ Falta de permissões na pasta
+✗ Pasta sendo sincronizada (OneDrive, Dropbox)
+✗ Outro programa usando os arquivos
+
+
+═══════════════════════════════════════════════════════════════════════════
+  📋 CHECKLIST ANTES DE CRIAR BUILD
+═══════════════════════════════════════════════════════════════════════════
+
+Antes de executar BUILD_EXECUTAVEL.bat, certifique-se:
+
+[ ] Nenhum executável do projeto está rodando
+[ ] Explorer não está aberto em dist_servidor
+[ ] Antivírus não está ativo ou tem exceção
+[ ] Nenhum terminal/cmd aberto na pasta
+[ ] OneDrive/Dropbox não está sincronizando
+[ ] Você tem permissão de administrador
+
+
+═══════════════════════════════════════════════════════════════════════════
+  🚀 MÉTODO ALTERNATIVO (OPÇÃO 5)
+═══════════════════════════════════════════════════════════════════════════
+
+Crie em outra pasta:
+
+1. Copie TODA pasta Reparo2eletro para C:\Temp\
+
+2. Entre em C:\Temp\Reparo2eletro\
+
+3. Execute: BUILD_EXECUTAVEL.bat
+
+4. Copie dist_servidor de volta
+
+
+═══════════════════════════════════════════════════════════════════════════
+  🆘 SE NADA FUNCIONAR
+═══════════════════════════════════════════════════════════════════════════
+
+1. Reinicie o computador
+
+2. Execute LIMPAR_BUILD.bat
+
+3. Desative antivírus temporariamente
+
+4. Execute BUILD_EXECUTAVEL.bat como Administrador:
+   • Clique direito > Executar como administrador
+
+5. Aguarde completar
+
+
+═══════════════════════════════════════════════════════════════════════════
+  📝 RESUMO
+═══════════════════════════════════════════════════════════════════════════
+
+ERRO: Acesso negado
+
+CAUSA: Arquivo em uso ou bloqueado
+
+SOLUÇÃO RÁPIDA:
+  1. Execute: LIMPAR_BUILD.bat
+  2. Feche tudo
+  3. Execute: BUILD_EXECUTAVEL.bat
+
+SOLUÇÃO DEFINITIVA:
+  • Adicione exceção no antivírus
+  • Use pasta sem sincronização (não no OneDrive)
+  • Execute como Administrador
+
+
+═══════════════════════════════════════════════════════════════════════════
+
+                    Versão: 1.0 | Data: 30/09/2025
+
+═══════════════════════════════════════════════════════════════════════════

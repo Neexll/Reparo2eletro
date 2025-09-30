@@ -1,12 +1,25 @@
 # -*- mode: python ; coding: utf-8 -*-
+from PyInstaller.utils.hooks import collect_all
+
+datas = [('templates', 'templates'), ('static', 'static'), ('schema.sql', '.')]
+binaries = []
+hiddenimports = ['flask', 'openpyxl', 'fpdf', 'matplotlib', 'webbrowser', 'threading', 'webview', 'webview.platforms.winforms']
+tmp_ret = collect_all('flask')
+datas += tmp_ret[0]; binaries += tmp_ret[1]; hiddenimports += tmp_ret[2]
+tmp_ret = collect_all('jinja2')
+datas += tmp_ret[0]; binaries += tmp_ret[1]; hiddenimports += tmp_ret[2]
+tmp_ret = collect_all('werkzeug')
+datas += tmp_ret[0]; binaries += tmp_ret[1]; hiddenimports += tmp_ret[2]
+tmp_ret = collect_all('webview')
+datas += tmp_ret[0]; binaries += tmp_ret[1]; hiddenimports += tmp_ret[2]
 
 
 a = Analysis(
-    ['desktop.py'],
+    ['desktop_app.py'],
     pathex=[],
-    binaries=[],
-    datas=[('templates', 'templates'), ('static', 'static'), ('database.db', '.'), ('schema.sql', '.')],
-    hiddenimports=['flask', 'flask_sqlalchemy', 'openpyxl', 'fpdf', 'matplotlib', 'sqlite3', 'PIL', 'PIL._imaging', 'PIL._imagingcms', 'PIL._imagingft', 'PIL._imagingmath', 'PIL._imagingmorph', 'PIL._imagingtk', 'PIL._webp', 'numpy', 'jinja2', 'markupsafe', 'werkzeug', 'itsdangerous', 'click', 'pyparsing', 'pytz', 'six', 'dateutil', 'dateutil.zoneinfo', 'matplotlib.backends.backend_agg', 'matplotlib.pyplot'],
+    binaries=binaries,
+    datas=datas,
+    hiddenimports=hiddenimports,
     hookspath=[],
     hooksconfig={},
     runtime_hooks=[],
@@ -35,4 +48,5 @@ exe = EXE(
     target_arch=None,
     codesign_identity=None,
     entitlements_file=None,
+    icon='NONE',
 )

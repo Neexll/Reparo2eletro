@@ -1,0 +1,112 @@
+═══════════════════════════════════════════════════════════════
+   INSTALAÇÃO MANUAL - COMO USAR
+═══════════════════════════════════════════════════════════════
+
+🎯 OBJETIVO:
+   Instalar e configurar o servidor diretamente no computador/
+   servidor da empresa usando Python e suas dependências.
+
+
+⚡ PASSO A PASSO RÁPIDO:
+
+   1. Copie TODOS estes arquivos para o servidor
+
+   2. No servidor, execute: instalar_servidor.bat
+      (Aguarde instalação concluir - ~5 minutos)
+
+   3. Execute como Administrador: configurar_firewall.bat
+
+   4. Execute: start_server_network.bat
+      (Mantenha esta janela aberta!)
+
+   5. Anote a URL que aparecer
+      (exemplo: http://192.168.1.100:5000/dashboard)
+
+   6. Compartilhe a URL com funcionários
+
+
+✅ PRONTO! O servidor estará rodando.
+
+
+📋 PRÉ-REQUISITOS:
+
+   ✓ Python 3.8 ou superior instalado
+   ✓ Acesso à internet (para instalar dependências)
+   ✓ Permissão de administrador (para firewall)
+
+
+⚠️ IMPORTANTE:
+
+   • Mantenha o terminal do servidor ABERTO
+   • Se fechar, o servidor para de funcionar
+   • Para parar: pressione Ctrl+C no terminal
+
+
+💡 DOIS MODOS DE SERVIDOR:
+
+   MODO SIMPLES (1-10 usuários):
+   → Execute: start_server_network.bat
+   → Usa: server.py
+
+   MODO ROBUSTO (10+ usuários):
+   → Abra terminal nesta pasta
+   → Digite: ..\..\venv\Scripts\activate
+   → Digite: python server_production.py
+   → Melhor performance e estabilidade
+
+
+🔧 SCRIPTS DISPONÍVEIS:
+
+   instalar_servidor.bat
+   └─ Cria ambiente virtual e instala dependências
+      Execute PRIMEIRO!
+
+   configurar_firewall.bat
+   └─ Libera porta 5000 no firewall
+      Execute como ADMINISTRADOR!
+
+   testar_configuracao.bat
+   └─ Verifica se tudo está OK
+      Execute para diagnóstico
+
+   start_server_network.bat
+   └─ Inicia o servidor na rede
+      Para uso diário
+
+   server.py
+   └─ Servidor Flask simples
+      Bom para poucos usuários
+
+   server_production.py
+   └─ Servidor Waitress robusto
+      Recomendado para produção
+
+
+🆘 PROBLEMAS COMUNS:
+
+   ❌ "Python não encontrado"
+   → Instale Python de: python.org/downloads
+   → Durante instalação, marque "Add to PATH"
+
+   ❌ "Erro ao instalar dependências"
+   → Verifique conexão com internet
+   → Execute novamente: instalar_servidor.bat
+
+   ❌ "Porta já em uso"
+   → Execute: netstat -ano | findstr :5000
+   → Feche programa usando porta 5000
+
+   ❌ "Funcionários não conseguem acessar"
+   → Execute: testar_configuracao.bat
+   → Verifique firewall: configurar_firewall.bat
+   → Confirme mesma rede local
+
+
+📄 DOCUMENTAÇÃO COMPLETA:
+
+   ../Documentacao/GUIA_INSTALACAO_SERVIDOR.md
+
+
+═══════════════════════════════════════════════════════════════
+Versão: 1.0 | Data: 30/09/2025
+═══════════════════════════════════════════════════════════════

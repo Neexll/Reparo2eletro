@@ -1,0 +1,251 @@
+╔═══════════════════════════════════════════════════════════════════════════╗
+║                                                                           ║
+║      CORREÇÃO: EXPORTAÇÃO NO APLICATIVO DESKTOP (PYWEBVIEW)              ║
+║                                                                           ║
+╚═══════════════════════════════════════════════════════════════════════════╝
+
+
+🚨 PROBLEMA:
+
+No aplicativo desktop (janela nativa com pywebview):
+• Botões de exportação Excel e PDF não funcionavam
+• Não era possível renomear o arquivo ao salvar
+
+
+═══════════════════════════════════════════════════════════════════════════
+  ✅ SOLUÇÃO IMPLEMENTADA
+═══════════════════════════════════════════════════════════════════════════
+
+Arquivo Atualizado: desktop_app.py
+
+ADICIONADO:
+
+1. Classe Api com método save_file()
+   → Recebe arquivo em base64 do JavaScript
+   → Decodifica para binário
+   → Abre diálogo para usuário escolher onde salvar
+   → Permite renomear o arquivo
+   → Salva o arquivo no local escolhido
+
+2. Configuração da API no pywebview
+   → js_api=api passado para webview.create_window()
+   → JavaScript pode chamar: window.pywebview.api.save_file()
+
+
+═══════════════════════════════════════════════════════════════════════════
+  🔧 COMO FUNCIONA AGORA
+═══════════════════════════════════════════════════════════════════════════
+
+FLUXO DE EXPORTAÇÃO:
+
+1. Usuário clica em "Exportar para Excel" ou "Exportar para PDF"
+   ↓
+2. JavaScript faz fetch da rota (/export ou /export/pdf)
+   ↓
+3. Servidor Flask gera o arquivo (Excel ou PDF)
+   ↓
+4. JavaScript converte para base64
+   ↓
+5. JavaScript chama: window.pywebview.api.save_file(base64, filename)
+   ↓
+6. Python abre diálogo "Salvar Como"
+   ↓
+7. Usuário escolhe local e pode RENOMEAR o arquivo
+   ↓
+8. Python salva o arquivo no local escolhido
+   ↓
+9. ✅ Concluído!
+
+
+═══════════════════════════════════════════════════════════════════════════
+  🧪 COMO TESTAR
+═══════════════════════════════════════════════════════════════════════════
+
+TESTE 1: Aplicativo Desktop (Janela Nativa)
+────────────────────────────────────────────
+
+Execute: TESTAR_DESKTOP_APP.bat
+
+Ou manualmente:
+
+  1. pip install pywebview
+  
+  2. python desktop_app.py
+  
+  3. Janela do aplicativo abrirá
+  
+  4. Vá para Dashboard
+  
+  5. Clique "Exportar para Excel"
+     → Diálogo de salvar abrirá
+     → Renomeie se quiser
+     → Escolha pasta
+     → Salvar
+  
+  6. Clique "Exportar para PDF"
+     → Mesmo processo
+  
+  ✅ Arquivos salvos onde você escolheu!
+
+
+TESTE 2: Navegador (Fallback)
+──────────────────────────────
+
+Execute: python desktop.py
+
+Se pywebview não estiver instalado, abre no navegador
+e faz download normal para pasta Downloads.
+
+
+═══════════════════════════════════════════════════════════════════════════
+  📋 CÓDIGO ADICIONADO
+═══════════════════════════════════════════════════════════════════════════
+
+1. IMPORT:
+   import base64
+
+2. CLASSE API:
+   class Api:
+       def save_file(self, base64_data, default_filename):
+           # Decodifica base64
+           file_data = base64.b64decode(base64_data)
+           
+           # Define tipos de arquivo
+           if default_filename.endswith('.xlsx'):
+               file_types = ('Excel Files (*.xlsx)', 'All files (*.*)')
+           elif default_filename.endswith('.pdf'):
+               file_types = ('PDF Files (*.pdf)', 'All files (*.*)')
+           
+           # Abre diálogo
+           result = webview.windows[0].create_file_dialog(
+               webview.SAVE_DIALOG,
+               save_filename=default_filename,
+               file_types=file_types
+           )
+           
+           # Salva arquivo
+           if result:
+               with open(result, 'wb') as f:
+                   f.write(file_data)
+               return {'status': 'success'}
+           return {'status': 'cancelled'}
+
+3. CONFIGURAÇÃO NO WEBVIEW:
+   api = Api()
+   window = webview.create_window(..., js_api=api)
+
+
+═══════════════════════════════════════════════════════════════════════════
+  💡 DIFERENÇAS ENTRE MODOS
+═══════════════════════════════════════════════════════════════════════════
+
+NAVEGADOR (desktop.py):
+• Abre no Chrome/Edge/Firefox
+• Download automático para pasta Downloads
+• Nome do arquivo fixo (não pode renomear)
+• Mais simples, menos controle
+
+DESKTOP (desktop_app.py):
+• Janela nativa do aplicativo ⭐
+• Diálogo "Salvar Como" do Windows
+• Pode renomear arquivo ✅
+• Pode escolher qualquer pasta ✅
+• Mais profissional
+
+
+═══════════════════════════════════════════════════════════════════════════
+  🎯 PRÓXIMOS PASSOS
+═══════════════════════════════════════════════════════════════════════════
+
+1. TESTAR AGORA:
+   
+   Execute: TESTAR_DESKTOP_APP.bat
+   
+   Teste a exportação com diálogo de salvar
+
+
+2. RECOMPILAR EXECUTÁVEL:
+   
+   Execute: BUILD_EXECUTAVEL.bat
+   
+   Aguarde 15-20 minutos
+   
+   O executável terá a funcionalidade completa!
+
+
+3. DISTRIBUIR:
+   
+   Copie pasta dist_servidor para onde usar
+   
+   Execute: Reparo2Eletro.exe
+   
+   ✅ Exportação funcionando perfeitamente!
+
+
+═══════════════════════════════════════════════════════════════════════════
+  🆘 RESOLUÇÃO DE PROBLEMAS
+═══════════════════════════════════════════════════════════════════════════
+
+❌ "pywebview não instalado":
+→ Execute: pip install pywebview
+→ Ou use: TESTAR_DESKTOP_APP.bat (instala automaticamente)
+
+❌ Diálogo não abre:
+→ Verifique se está usando desktop_app.py (não desktop.py)
+→ Verifique se pywebview está instalado
+→ Execute: python -c "import webview; print('OK')"
+
+❌ Erro ao salvar:
+→ Escolha uma pasta com permissão de escrita
+→ Não use caracteres especiais no nome
+→ Verifique espaço em disco
+
+❌ Arquivo vazio:
+→ Adicione pedidos antes de exportar
+→ Vá em "Pedidos" e cadastre alguns
+→ Tente exportar novamente
+
+
+═══════════════════════════════════════════════════════════════════════════
+  📊 FUNCIONALIDADES DO DIÁLOGO DE SALVAR
+═══════════════════════════════════════════════════════════════════════════
+
+✅ Renomear arquivo
+   → Digite novo nome na caixa de texto
+
+✅ Escolher pasta
+   → Navegue pelas pastas do Windows
+
+✅ Filtro de tipo de arquivo
+   → Excel: mostra apenas .xlsx
+   → PDF: mostra apenas .pdf
+   → Ou escolha "Todos os arquivos"
+
+✅ Substituir arquivo existente
+   → Aviso se arquivo já existe
+
+
+═══════════════════════════════════════════════════════════════════════════
+  💡 RESUMO
+═══════════════════════════════════════════════════════════════════════════
+
+PROBLEMA: Exportação não funcionava no desktop
+
+CAUSA: Faltava API do pywebview configurada
+
+SOLUÇÃO: Classe Api com método save_file() adicionada
+
+RESULTADO: 
+• ✅ Exportação funciona no desktop
+• ✅ Diálogo "Salvar Como" nativo
+• ✅ Pode renomear arquivo
+• ✅ Pode escolher pasta
+
+AÇÃO: Execute TESTAR_DESKTOP_APP.bat
+
+
+═══════════════════════════════════════════════════════════════════════════
+
+                    Versão: 1.0 | Data: 30/09/2025
+
+═══════════════════════════════════════════════════════════════════════════

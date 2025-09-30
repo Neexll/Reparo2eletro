@@ -1,0 +1,185 @@
+╔═══════════════════════════════════════════════════════════════════════════╗
+║                                                                           ║
+║                         📖 LEIA PRIMEIRO                                  ║
+║                    REPARO2ELETRO - Guia Inicial                          ║
+║                                                                           ║
+╚═══════════════════════════════════════════════════════════════════════════╝
+
+
+Olá! Bem-vindo ao Reparo2Eletro!
+
+Você está aqui porque quer rodar este sistema no servidor da sua empresa
+para que seus funcionários possam acessá-lo pela rede local.
+
+
+═══════════════════════════════════════════════════════════════════════════
+  🎯 POR ONDE COMEÇAR?
+═══════════════════════════════════════════════════════════════════════════
+
+  Siga esta ordem de leitura:
+
+  1️⃣  QUAL_METODO_ESCOLHER.txt (5 minutos) ⭐
+      ➜ Decide entre Build Executável ou Instalação Manual
+      ➜ Questionário rápido e guia de decisão
+      ➜ COMECE POR AQUI!
+
+  2️⃣  RESUMO_FINAL.txt (10 minutos)
+      ➜ Visão geral completa de ambos os métodos
+      ➜ Comparações detalhadas
+      ➜ Recomendações finais
+
+  3️⃣  Escolha seu método e leia o guia específico:
+
+      MÉTODO A - Build Executável (recomendado):
+      📄 GUIA_BUILD_DISTRIBUICAO.md
+      
+      MÉTODO B - Instalação Manual:
+      📄 GUIA_INSTALACAO_SERVIDOR.md
+
+
+═══════════════════════════════════════════════════════════════════════════
+  ⚡ ATALHO RÁPIDO (Sem ler nada)
+═══════════════════════════════════════════════════════════════════════════
+
+  Quer a solução MAIS FÁCIL sem ler muito?
+
+  ┌─────────────────────────────────────────────────────────────────────┐
+  │                                                                     │
+  │  Execute: build_server.bat                                          │
+  │                                                                     │
+  │  ⏱️ Aguarde 5-10 minutos                                            │
+  │  📁 Copie pasta "dist_servidor" para o servidor                     │
+  │  ▶️ No servidor, execute: INICIAR_SERVIDOR.bat                      │
+  │                                                                     │
+  │  ✅ PRONTO! URL aparecerá na tela                                   │
+  │                                                                     │
+  └─────────────────────────────────────────────────────────────────────┘
+
+
+═══════════════════════════════════════════════════════════════════════════
+  📚 DOCUMENTAÇÃO COMPLETA
+═══════════════════════════════════════════════════════════════════════════
+
+  🎯 GUIAS DE INÍCIO:
+  ├─ LEIA_PRIMEIRO.txt (este arquivo)      - Índice de navegação
+  ├─ QUAL_METODO_ESCOLHER.txt              - Guia de decisão ⭐
+  ├─ RESUMO_FINAL.txt                      - Visão geral completa
+  ├─ COMECE_AQUI.txt                       - Início rápido visual
+  └─ GUIA_RAPIDO.txt                       - Tutorial passo a passo
+
+  📦 BUILD EXECUTÁVEL:
+  ├─ GUIA_BUILD_DISTRIBUICAO.md            - Documentação completa
+  ├─ build_server.bat                      - Criar distribuição ⭐
+  └─ build_server.py                       - Script de build
+
+  🔧 INSTALAÇÃO MANUAL:
+  ├─ GUIA_INSTALACAO_SERVIDOR.md           - Documentação completa
+  ├─ instalar_servidor.bat                 - Instalação automática ⭐
+  ├─ configurar_firewall.bat               - Configurar firewall
+  └─ testar_configuracao.bat               - Testar sistema
+
+  📖 REFERÊNCIA:
+  ├─ README_SERVIDOR.txt                   - Resumo de funcionalidades
+  └─ INDICE_ARQUIVOS.txt                   - Lista completa de arquivos
+
+
+═══════════════════════════════════════════════════════════════════════════
+  ❓ PERGUNTAS FREQUENTES
+═══════════════════════════════════════════════════════════════════════════
+
+  Q: Qual método devo escolher?
+  A: Leia QUAL_METODO_ESCOLHER.txt
+     TL;DR: Build Executável para a maioria dos casos
+
+  Q: Preciso instalar Python no servidor?
+  A: Não, se usar Build Executável
+     Sim, se usar Instalação Manual
+
+  Q: Quanto tempo demora?
+  A: Build Executável: 10 min (build) + 2 min (deploy)
+     Instalação Manual: 5-10 min
+
+  Q: Funciona na internet?
+  A: Não, apenas rede local (mesma WiFi/rede)
+
+  Q: E se eu não souber nada de programação?
+  A: Use Build Executável - é só copiar e executar!
+
+  Q: Posso testar antes de colocar no servidor?
+  A: Sim! Execute localmente primeiro
+
+
+═══════════════════════════════════════════════════════════════════════════
+  🚦 FLUXO RECOMENDADO
+═══════════════════════════════════════════════════════════════════════════
+
+  PASSO 1: Decisão (5 minutos)
+  └─ Leia: QUAL_METODO_ESCOLHER.txt
+
+  PASSO 2: Preparação (10 minutos)
+  ├─ BUILD: Execute build_server.bat
+  └─ MANUAL: Execute instalar_servidor.bat
+
+  PASSO 3: Deploy (5 minutos)
+  ├─ BUILD: Copie dist_servidor para servidor
+  └─ MANUAL: Configure no próprio servidor
+
+  PASSO 4: Configuração (5 minutos)
+  ├─ Configure firewall
+  ├─ Inicie o servidor
+  └─ Anote a URL
+
+  PASSO 5: Distribuição (10 minutos)
+  ├─ Execute: criar_atalho_funcionario.bat
+  └─ Distribua atalhos para funcionários
+
+  TOTAL: ~35 minutos
+
+
+═══════════════════════════════════════════════════════════════════════════
+  ⭐ RECOMENDAÇÃO
+═══════════════════════════════════════════════════════════════════════════
+
+  Para 90% dos usuários, recomendamos:
+
+  🏆 BUILD EXECUTÁVEL (dist_servidor/)
+
+  É mais fácil, mais profissional, e funciona em qualquer servidor
+  Windows sem precisar instalar Python ou dependências.
+
+
+═══════════════════════════════════════════════════════════════════════════
+  📞 PRECISA DE AJUDA?
+═══════════════════════════════════════════════════════════════════════════
+
+  Problema?
+  1. Execute: testar_configuracao.bat
+  2. Consulte o guia do seu método
+  3. Veja seção "Solução de Problemas" nos guias
+
+
+═══════════════════════════════════════════════════════════════════════════
+  🎬 AÇÃO IMEDIATA
+═══════════════════════════════════════════════════════════════════════════
+
+  Escolha UMA das opções abaixo AGORA:
+
+  [ ] Vou ler tudo com calma
+      → Próximo: QUAL_METODO_ESCOLHER.txt
+
+  [ ] Quero a solução mais fácil AGORA
+      → Execute: build_server.bat
+
+  [ ] Tenho Python e quero controle
+      → Execute: instalar_servidor.bat
+
+
+═══════════════════════════════════════════════════════════════════════════
+
+  Boa sorte! Qualquer dúvida, consulte os guias.
+
+═══════════════════════════════════════════════════════════════════════════
+
+                    Versão: 1.0 | Data: 30/09/2025
+
+═══════════════════════════════════════════════════════════════════════════

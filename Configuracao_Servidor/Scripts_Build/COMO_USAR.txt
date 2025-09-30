@@ -1,0 +1,92 @@
+═══════════════════════════════════════════════════════════════
+   BUILD EXECUTÁVEL - COMO USAR
+═══════════════════════════════════════════════════════════════
+
+🎯 OBJETIVO:
+   Criar uma pasta "dist_servidor" com executável independente
+   que pode ser copiado para qualquer servidor Windows sem
+   precisar instalar Python ou dependências.
+
+
+⚡ OPÇÃO A - TUDO AUTOMÁTICO (RECOMENDADO):
+
+   1. Clique 2x em: build_server_completo.bat
+
+   2. Aguarde 10-15 minutos (instala tudo + cria build)
+
+   3. Uma pasta "dist_servidor" será criada
+
+   4. Copie TODA a pasta "dist_servidor" para o servidor
+
+   5. No servidor, execute: INICIAR_SERVIDOR.bat
+
+   ✅ Este script faz TUDO automaticamente!
+
+
+⚡ OPÇÃO B - PASSO A PASSO MANUAL:
+
+   1. Primeiro, execute: ..\..\instalar_servidor.bat
+      (cria ambiente virtual)
+
+   2. Depois, execute: build_server.bat
+      (cria o build)
+
+   3. Copie pasta "dist_servidor" para o servidor
+
+   4. No servidor, execute: INICIAR_SERVIDOR.bat
+
+
+📋 PRÉ-REQUISITOS:
+
+   Antes de executar build_server.bat, certifique-se que:
+
+   ✓ Você está na pasta raiz do projeto Reparo2eletro
+   ✓ Tem ambiente virtual criado (pasta venv/)
+   ✓ Tem internet (para instalar PyInstaller se necessário)
+
+
+⚠️ IMPORTANTE:
+
+   • O build demora 5-10 minutos na primeira vez
+   • Precisa ter ~500 MB de espaço livre em disco
+   • O executável final terá ~100 MB
+   • Não feche o terminal durante o build
+
+
+💡 RESULTADO:
+
+   Após o build, você terá em dist_servidor/:
+   
+   ├── Reparo2Eletro_Server.exe  (executável principal)
+   ├── templates/                 (páginas HTML)
+   ├── static/                    (CSS, JS, imagens)
+   ├── schema.sql                 (estrutura do banco)
+   ├── INICIAR_SERVIDOR.bat       (atalho para iniciar)
+   ├── CONFIGURAR_FIREWALL.bat    (configurar firewall)
+   ├── FAZER_BACKUP.bat           (fazer backup)
+   └── LEIA-ME.txt               (instruções)
+
+
+🆘 PROBLEMAS COMUNS:
+
+   ❌ "Ambiente virtual não encontrado"
+   → Execute primeiro: instalar_servidor.bat
+   → Ou crie o venv: python -m venv venv
+
+   ❌ "PyInstaller não instalado"
+   → O script instala automaticamente, aguarde
+
+   ❌ "Erro durante build"
+   → Verifique se tem espaço em disco
+   → Tente fechar outros programas
+   → Execute novamente
+
+
+📄 DOCUMENTAÇÃO COMPLETA:
+
+   ../Documentacao/GUIA_BUILD_DISTRIBUICAO.md
+
+
+═══════════════════════════════════════════════════════════════
+Versão: 1.0 | Data: 30/09/2025
+═══════════════════════════════════════════════════════════════

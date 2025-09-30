@@ -1,0 +1,202 @@
+╔═══════════════════════════════════════════════════════════════════════════╗
+║                                                                           ║
+║                    NOVA VERSÃO DESKTOP COM JANELA                        ║
+║                         Reparo2Eletro v2.0                               ║
+║                                                                           ║
+╚═══════════════════════════════════════════════════════════════════════════╝
+
+
+🎉 NOVIDADES:
+
+O aplicativo desktop agora abre em uma JANELA PRÓPRIA, 
+não mais no navegador!
+
+
+═══════════════════════════════════════════════════════════════════════════
+  ✨ O QUE MUDOU
+═══════════════════════════════════════════════════════════════════════════
+
+ANTES:
+  • Reparo2Eletro.exe abria o navegador Chrome/Edge
+  • Aparecia na barra de tarefas como navegador
+  • Precisava do navegador instalado
+
+AGORA:
+  • Reparo2Eletro.exe abre em JANELA PRÓPRIA
+  • Aparece como aplicativo independente
+  • Interface nativa do Windows
+  • Não depende do navegador
+
+
+═══════════════════════════════════════════════════════════════════════════
+  📦 ARQUIVOS CRIADOS
+═══════════════════════════════════════════════════════════════════════════
+
+desktop_app.py
+  → Novo arquivo que cria janela nativa usando pywebview
+  → Substitui desktop.py na compilação
+
+build_server.py (atualizado)
+  → Agora compila com pywebview
+  → Inclui todas as dependências necessárias
+
+BUILD_EXECUTAVEL.bat (atualizado)
+  → Instala pywebview automaticamente
+  → Cria executável com janela nativa
+
+
+═══════════════════════════════════════════════════════════════════════════
+  🚀 COMO USAR
+═══════════════════════════════════════════════════════════════════════════
+
+1. CRIAR O NOVO EXECUTÁVEL:
+
+   Execute: BUILD_EXECUTAVEL.bat
+   
+   Aguarde 15-20 minutos
+   
+   O novo Reparo2Eletro.exe será criado com janela nativa!
+
+
+2. TESTAR ANTES DE COMPILAR:
+
+   Para testar a nova versão desktop:
+   
+   python desktop_app.py
+   
+   Uma janela do aplicativo abrirá automaticamente!
+
+
+3. USAR O EXECUTÁVEL:
+
+   Na pasta dist_servidor:
+   
+   • Reparo2Eletro.exe → Abre em janela própria ⭐ NOVO!
+   • Reparo2Eletro_Server.exe → Para rede
+   
+   Clique 2x em Reparo2Eletro.exe e o aplicativo abre!
+
+
+═══════════════════════════════════════════════════════════════════════════
+  💻 CARACTERÍSTICAS DA JANELA
+═══════════════════════════════════════════════════════════════════════════
+
+✓ Tamanho: 1400x900 pixels
+✓ Redimensionável: Sim
+✓ Tamanho mínimo: 1024x768
+✓ Título: "Reparo2Eletro"
+✓ Ícone: Ícone padrão do Windows
+✓ Tela cheia: Botão F11
+✓ Fechar: X no canto (fecha o aplicativo)
+
+
+═══════════════════════════════════════════════════════════════════════════
+  🔧 REQUISITOS
+═══════════════════════════════════════════════════════════════════════════
+
+Para compilar:
+  • Python 3.8+
+  • PyInstaller
+  • Pywebview ⭐ NOVO!
+  • Flask, openpyxl, fpdf2, matplotlib
+
+O script BUILD_EXECUTAVEL.bat instala TUDO automaticamente!
+
+
+═══════════════════════════════════════════════════════════════════════════
+  📊 COMPARAÇÃO
+═══════════════════════════════════════════════════════════════════════════
+
+                      │ Versão Antiga  │ Versão Nova ⭐
+──────────────────────┼────────────────┼────────────────
+Interface             │ Navegador      │ Janela Nativa
+Ícone na barra        │ Navegador      │ Reparo2Eletro
+Depende de navegador  │ Sim            │ Não
+Parece aplicativo     │ Não            │ Sim ✓
+Tamanho executável    │ ~80 MB         │ ~100 MB
+Velocidade            │ Normal         │ Mesma
+
+
+═══════════════════════════════════════════════════════════════════════════
+  ⚠️ RESOLUÇÃO DE PROBLEMAS
+═══════════════════════════════════════════════════════════════════════════
+
+Erro: "pywebview não instalado"
+→ Execute: pip install pywebview
+→ Ou use BUILD_EXECUTAVEL.bat que instala tudo
+
+Janela não abre:
+→ Execute python desktop_app.py para ver erros
+→ Verifique se todas dependências estão instaladas
+→ Tente reinstalar: pip install --upgrade pywebview
+
+Erro 500 ao clicar em algo:
+→ Verifique se database.db existe
+→ Execute: python init_db.py
+→ Certifique-se que schema.sql está presente
+
+
+═══════════════════════════════════════════════════════════════════════════
+  📋 PASSO A PASSO COMPLETO
+═══════════════════════════════════════════════════════════════════════════
+
+CRIAR NOVA VERSÃO COM JANELA NATIVA:
+
+1. Abra terminal na pasta do projeto
+
+2. Execute: BUILD_EXECUTAVEL.bat
+
+3. Aguarde 15-20 minutos (compila 2 executáveis)
+
+4. Entre na pasta: dist_servidor
+
+5. Teste: Clique 2x em Reparo2Eletro.exe
+
+6. ✅ O aplicativo abre em janela própria!
+
+7. Para distribuir: Copie TODA a pasta dist_servidor
+
+
+═══════════════════════════════════════════════════════════════════════════
+  💡 DICAS
+═══════════════════════════════════════════════════════════════════════════
+
+• A janela pode demorar 3-5 segundos para abrir (normal)
+
+• Se preferir navegador, use a versão antiga (desktop.py)
+
+• O servidor continua rodando em segundo plano
+
+• Ao fechar a janela, o aplicativo é encerrado
+
+• O banco de dados fica na mesma pasta do executável
+
+
+═══════════════════════════════════════════════════════════════════════════
+  🎯 RECOMENDAÇÃO
+═══════════════════════════════════════════════════════════════════════════
+
+USE A NOVA VERSÃO (desktop_app.py)!
+
+Vantagens:
+✓ Mais profissional
+✓ Parece aplicativo de verdade
+✓ Não abre abas no navegador
+✓ Ícone próprio na barra
+✓ Usuários não veem URL
+
+
+═══════════════════════════════════════════════════════════════════════════
+
+Para recriar o executável com a nova versão:
+
+  1. Execute: BUILD_EXECUTAVEL.bat
+  2. Aguarde completar
+  3. Teste: dist_servidor\Reparo2Eletro.exe
+  4. Distribua!
+
+═══════════════════════════════════════════════════════════════════════════
+
+                    Versão: 2.0 | Data: 30/09/2025
+
+═══════════════════════════════════════════════════════════════════════════

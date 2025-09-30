@@ -41,16 +41,34 @@
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
             const blob = await response.blob();
-            const reader = new FileReader();
-            reader.readAsDataURL(blob);
-            reader.onloadend = async () => {
-                const base64data = reader.result.split(',')[1];
-                // Chama a função Python exposta para salvar o arquivo
-                const result = await window.pywebview.api.save_file(base64data, defaultFilename);
-                if (result.status === 'error') {
-                    alert(`Erro ao salvar o arquivo: ${result.message}`);
-                }
-            };
+            
+            // Verifica se está rodando no pywebview ou no navegador
+            if (window.pywebview && window.pywebview.api && window.pywebview.api.save_file) {
+                // Modo pywebview (executável)
+                const reader = new FileReader();
+                reader.readAsDataURL(blob);
+                reader.onloadend = async () => {
+                    const base64data = reader.result.split(',')[1];
+                    const result = await window.pywebview.api.save_file(base64data, defaultFilename);
+                    if (result.status === 'success') {
+                        alert(`Arquivo salvo com sucesso!`);
+                    } else if (result.status === 'error') {
+                        alert(`Erro ao salvar o arquivo: ${result.message}`);
+                    }
+                    // Se status === 'cancelled', não faz nada (usuário cancelou)
+                };
+            } else {
+                // Modo navegador (download padrão)
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.style.display = 'none';
+                a.href = url;
+                a.download = defaultFilename;
+                document.body.appendChild(a);
+                a.click();
+                window.URL.revokeObjectURL(url);
+                document.body.removeChild(a);
+            }
         } catch (error) {
             console.error('Erro ao baixar o relatório:', error);
             alert('Ocorreu um erro ao baixar o relatório. Verifique o console para mais detalhes.');

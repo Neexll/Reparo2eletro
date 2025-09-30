@@ -1,0 +1,261 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard - Reparo2Eletro{% endblock %}
+
+{% block content %}
+    <div class="header-container fade-in">
+        <div class="header-actions">
+            <a href="{{ url_for('index') }}" class="btn btn-secondary"><i class="fas fa-arrow-left"></i> Voltar</a>
+        </div>
+        <h2><i class="fas fa-chart-line"></i> Dashboard de Estatísticas</h2>
+        <div class="export-buttons">
+            <button data-url="{{ url_for('export') }}" data-filename="relatorio.xlsx" class="btn btn-success btn-download"><i class="fas fa-file-excel"></i> Exportar para Excel</button>
+            <button data-url="{{ url_for('export_pdf') }}" data-filename="relatorio.pdf" class="btn btn-danger btn-download"><i class="fas fa-file-pdf"></i> Exportar para PDF</button>
+        </div>
+    </div>
+
+    <div class="charts-container fade-in">
+        <div class="chart-card">
+            <h3><i class="fas fa-chart-pie"></i> Peças por Defeito</h3>
+            <canvas id="pecasPorDefeitoChart"></canvas>
+        </div>
+        <div class="chart-card">
+            <div class="chart-header">
+                <h3><i class="fas fa-chart-bar"></i> Volume Mensal de Peças</h3>
+                <div class="chart-filter">
+                    <label for="month-filter">Filtrar por Mês:</label>
+                    <select id="month-filter"></select>
+                </div>
+            </div>
+            <canvas id="pecasMensalChart"></canvas>
+        </div>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    async function downloadReport(url, defaultFilename) {
+        try {
+            const response = await fetch(url);
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            const blob = await response.blob();
+            
+            // Verifica se está rodando no pywebview ou no navegador
+            if (window.pywebview && window.pywebview.api && window.pywebview.api.save_file) {
+                // Modo pywebview (executável)
+                const reader = new FileReader();
+                reader.readAsDataURL(blob);
+                reader.onloadend = async () => {
+                    const base64data = reader.result.split(',')[1];
+                    const result = await window.pywebview.api.save_file(base64data, defaultFilename);
+                    if (result.status === 'error') {
+                        alert(`Erro ao salvar o arquivo: ${result.message}`);
+                    } else {
+                        alert(`Arquivo salvo com sucesso!`);
+                    }
+                };
+            } else {
+                // Modo navegador (download padrão)
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.style.display = 'none';
+                a.href = url;
+                a.download = defaultFilename;
+                document.body.appendChild(a);
+                a.click();
+                window.URL.revokeObjectURL(url);
+                document.body.removeChild(a);
+            }
+        } catch (error) {
+            console.error('Erro ao baixar o relatório:', error);
+            alert('Ocorreu um erro ao baixar o relatório. Verifique o console para mais detalhes.');
+        }
+    }
+</script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Event listener for the new download buttons
+    document.querySelectorAll('.btn-download').forEach(button => {
+        button.addEventListener('click', function() {
+            const url = this.dataset.url;
+            const filename = this.dataset.filename;
+            downloadReport(url, filename);
+        });
+    });
+
+    // Registrar o plugin de datalabels globalmente
+    Chart.register(ChartDataLabels);
+
+    // Paleta de cores fixas para consistência
+    const fixedColors = [
+        'rgba(255, 99, 132, 0.8)', 'rgba(54, 162, 235, 0.8)', 'rgba(255, 206, 86, 0.8)',
+        'rgba(75, 192, 192, 0.8)', 'rgba(153, 102, 255, 0.8)', 'rgba(255, 159, 64, 0.8)',
+        'rgba(255, 99, 132, 0.6)', 'rgba(54, 162, 235, 0.6)', 'rgba(255, 206, 86, 0.6)',
+        'rgba(75, 192, 192, 0.6)', 'rgba(153, 102, 255, 0.6)', 'rgba(255, 159, 64, 0.6)',
+        'rgba(199, 199, 199, 0.8)', 'rgba(83, 102, 255, 0.8)', 'rgba(40, 159, 64, 0.8)'
+    ];
+
+    // Gráfico de Pizza: Peças por Defeito
+    fetch('/api/stats/pecas_por_defeito')
+        .then(response => response.json())
+        .then(data => {
+            const ctx = document.getElementById('pecasPorDefeitoChart').getContext('2d');
+            if (data.length === 0) {
+                ctx.font = '16px Arial';
+                ctx.textAlign = 'center';
+                ctx.fillText('Nenhum dado para exibir', ctx.canvas.width / 2, ctx.canvas.height / 2);
+                return;
+            }
+            const labels = data.map(item => item.label);
+            const values = data.map(item => item.total);
+            const total = values.reduce((acc, val) => acc + val, 0);
+
+            new Chart(ctx, {
+                type: 'pie',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Total de Peças',
+                        data: values,
+                        backgroundColor: fixedColors,
+                        borderColor: 'rgba(255, 255, 255, 0.5)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const label = context.label || '';
+                                    const value = context.raw || 0;
+                                    const percentage = ((value / total) * 100).toFixed(2);
+                                    return `${label}: ${value} (${percentage}%)`;
+                                }
+                            }
+                        },
+                        datalabels: {
+                            color: '#fff',
+                            formatter: (value, context) => {
+                                const percentage = ((value / total) * 100).toFixed(1) + '%';
+                                return percentage;
+                            },
+                            font: {
+                                weight: 'bold'
+                            }
+                        }
+                    }
+                }
+            });
+        });
+
+    // Gráfico de Barras com Filtro: Volume Mensal por Peça
+    const monthFilter = document.getElementById('month-filter');
+    let monthlyChart = null;
+    let originalData = {};
+
+    function updateMonthlyChart(selectedMonth) {
+        if (!monthlyChart) return;
+
+        let filteredData;
+        if (selectedMonth === 'all') {
+            filteredData = { ...originalData };
+        } else {
+            const monthIndex = originalData.labels.indexOf(selectedMonth);
+            if (monthIndex === -1) return;
+
+            filteredData = {
+                labels: [selectedMonth],
+                datasets: originalData.datasets.map(dataset => ({
+                    ...dataset,
+                    data: [dataset.data[monthIndex]]
+                }))
+            };
+        }
+
+        monthlyChart.data = filteredData;
+        
+        // Recalcula o valor máximo para o eixo Y
+        let maxValue = 0;
+        filteredData.datasets.forEach(dataset => {
+            const maxInData = Math.max(...dataset.data);
+            if (maxInData > maxValue) maxValue = maxInData;
+        });
+        monthlyChart.options.scales.y.max = maxValue + 1;
+
+        monthlyChart.update();
+    }
+
+    fetch('/api/stats/pecas_mensal')
+        .then(response => response.json())
+        .then(data => {
+            const ctx = document.getElementById('pecasMensalChart').getContext('2d');
+            if (!data.labels || data.labels.length === 0) {
+                ctx.font = '16px Arial';
+                ctx.textAlign = 'center';
+                ctx.fillText('Nenhum dado para exibir', ctx.canvas.width / 2, ctx.canvas.height / 2);
+                return;
+            }
+
+            originalData = data; // Salva os dados originais
+
+            // Popula o dropdown do filtro
+            monthFilter.innerHTML = '<option value="all">Todos os Meses</option>';
+            originalData.labels.forEach(month => {
+                const option = document.createElement('option');
+                option.value = month;
+                option.textContent = month;
+                monthFilter.appendChild(option);
+            });
+
+            // Atribui cores e espaçamento
+            originalData.datasets.forEach((dataset, index) => {
+                dataset.backgroundColor = fixedColors[index % fixedColors.length];
+                dataset.barPercentage = 0.8;
+                dataset.categoryPercentage = 0.6;
+            });
+
+            monthlyChart = new Chart(ctx, {
+                type: 'bar',
+                data: {}, // Inicia com dados vazios
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'bottom' },
+                        datalabels: {
+                            anchor: 'end',
+                            align: 'top',
+                            color: '#333',
+                            font: { weight: 'bold' },
+                            formatter: (value) => value > 0 ? value : ''
+                        }
+                    },
+                    scales: {
+                        x: { stacked: false },
+                        y: {
+                            stacked: false,
+                            beginAtZero: true,
+                            title: { display: true, text: 'Quantidade de Peças' },
+                            ticks: { stepSize: 1 }
+                        }
+                    }
+                }
+            });
+
+            updateMonthlyChart('all'); // Exibe o gráfico inicial com todos os dados
+
+            monthFilter.addEventListener('change', (e) => {
+                updateMonthlyChart(e.target.value);
+            });
+        });
+});
+</script>
+{% endblock %}

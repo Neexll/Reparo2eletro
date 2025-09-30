@@ -1,0 +1,122 @@
+{% extends 'base.html' %}
+
+{% block title %}Criar Novo Pedido - Reparo2Eletro{% endblock %}
+
+{% block content %}
+    <div class="header-container fade-in">
+        <h2><i class="fas fa-plus-circle"></i> Criar Novo Pedido de Reparo</h2>
+        <a href="{{ url_for('index') }}" class="btn btn-secondary"><i class="fas fa-arrow-left"></i> Voltar</a>
+    </div>
+
+    <div class="card fade-in">
+        <form method="post" class="form-container">
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="numero_pedido"><i class="fas fa-hashtag"></i> Número do Pedido</label>
+                    <input type="text" name="numero_pedido" id="numero_pedido" placeholder="Ex: PED-2023-001" required autofocus>
+                </div>
+                <div class="form-group">
+                    <label for="tecnico_nome"><i class="fas fa-user-tie"></i> Nome do Técnico</label>
+                    <select name="tecnico_nome" id="tecnico_nome" required>
+                        <option value="" disabled selected>Selecione...</option>
+                        {% for tecnico in tecnicos %}
+                            <option value="{{ tecnico.nome }}">{{ tecnico.nome }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+
+            <hr>
+
+            <div class="pecas-section">
+                <h4><i class="fas fa-tools"></i> Peças e Defeitos</h4>
+                <div id="pecas-container">
+                    <!-- As linhas de peças serão adicionadas aqui -->
+                </div>
+                <button type="button" id="add-peca-btn" class="btn btn-secondary"><i class="fas fa-plus"></i> Adicionar Peça</button>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Salvar Pedido e Peças</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Template para uma nova linha de peça -->
+    <template id="peca-template">
+        <div class="peca-row">
+            <div class="form-group">
+                <label for="peca_nome"><i class="fas fa-cog"></i> Peça</label>
+                <select name="peca_nome[]" class="peca-select" required>
+                    <option value="" disabled selected>Selecione a peça...</option>
+                    {% for tipo in tipos_pecas %}
+                        <option value="{{ tipo.nome }}" data-id="{{ tipo.id }}">{{ tipo.nome }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="peca_defeito"><i class="fas fa-exclamation-triangle"></i> Defeito</label>
+                <select name="peca_defeito[]" class="defeito-select" required>
+                    <option value="" disabled selected>Selecione o defeito...</option>
+                </select>
+            </div>
+            <button type="button" class="btn btn-danger remove-peca-btn"><i class="fas fa-trash-alt"></i></button>
+        </div>
+    </template>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const pecasContainer = document.getElementById('pecas-container');
+            const addPecaBtn = document.getElementById('add-peca-btn');
+            const pecaTemplate = document.getElementById('peca-template');
+
+            // Função para adicionar uma nova linha de peça
+            function addPecaRow() {
+                const newRow = pecaTemplate.content.cloneNode(true);
+                pecasContainer.appendChild(newRow);
+                attachEventListeners(pecasContainer.lastElementChild);
+            }
+
+            // Função para carregar defeitos com base na peça selecionada
+            function loadDefeitos(pecaSelect, defeitoSelect) {
+                const selectedOption = pecaSelect.options[pecaSelect.selectedIndex];
+                const pecaId = selectedOption.dataset.id;
+
+                defeitoSelect.innerHTML = '<option value="" disabled selected>Carregando...</option>';
+
+                if (pecaId) {
+                    fetch(`/api/pecas/${pecaId}/defeitos`)
+                        .then(response => response.json())
+                        .then(data => {
+                            defeitoSelect.innerHTML = '<option value="" disabled selected>Selecione o defeito...</option>';
+                            data.forEach(defeito => {
+                                const option = new Option(defeito, defeito);
+                                defeitoSelect.add(option);
+                            });
+                        })
+                        .catch(error => {
+                            console.error('Erro ao buscar defeitos:', error);
+                            defeitoSelect.innerHTML = '<option value="">Erro ao carregar</option>';
+                        });
+                }
+            }
+
+            // Anexa os event listeners a uma linha de peça
+            function attachEventListeners(row) {
+                const pecaSelect = row.querySelector('.peca-select');
+                const defeitoSelect = row.querySelector('.defeito-select');
+                const removeBtn = row.querySelector('.remove-peca-btn');
+
+                pecaSelect.addEventListener('change', () => loadDefeitos(pecaSelect, defeitoSelect));
+                removeBtn.addEventListener('click', () => row.remove());
+            }
+
+            // Adiciona a primeira linha de peça ao carregar a página
+            addPecaRow();
+
+            // Evento para o botão de adicionar nova peça
+            addPecaBtn.addEventListener('click', addPecaRow);
+        });
+    </script>
+
+{% endblock %}

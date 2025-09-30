@@ -1,0 +1,79 @@
+╔═══════════════════════════════════════════════════════════════╗
+║                                                               ║
+║           COMO CRIAR EXECUTÁVEL PARA O SERVIDOR              ║
+║                                                               ║
+╚═══════════════════════════════════════════════════════════════╝
+
+
+🎯 OBJETIVO:
+   Criar um executável (.exe) que pode ser copiado para o
+   servidor da empresa SEM precisar instalar Python.
+
+
+⚡ PASSO A PASSO:
+
+   1. Clique 2x no arquivo: BUILD_EXECUTAVEL.bat
+      (está nesta mesma pasta)
+
+   2. Siga as instruções na tela
+      (vai pausar em cada etapa)
+
+   3. Aguarde 10-15 minutos
+
+   4. A pasta "dist_servidor" será criada
+
+   5. Copie TODA a pasta "dist_servidor" para o servidor
+
+   6. No servidor, execute: INICIAR_SERVIDOR.bat
+
+
+✅ PRONTO! Sistema rodando no servidor!
+
+
+═══════════════════════════════════════════════════════════════
+
+📋 REQUISITOS:
+
+   ✓ Python 3.8 ou superior instalado
+   ✓ Conexão com internet
+   ✓ ~500 MB de espaço livre em disco
+   ✓ 10-15 minutos de tempo
+
+
+═══════════════════════════════════════════════════════════════
+
+🆘 PROBLEMAS?
+
+   Se o script fechar rapidamente:
+   
+   1. Abra o Prompt de Comando (cmd) manualmente
+   
+   2. Digite: cd C:\Users\Micro\Desktop\Reparo2eletro
+   
+   3. Digite: BUILD_EXECUTAVEL.bat
+   
+   4. Veja os erros que aparecem
+
+
+   Se Python não for encontrado:
+   
+   → Instale de: https://python.org/downloads
+   → Durante instalação, marque: "Add Python to PATH"
+   → Reinicie o computador após instalar
+
+
+═══════════════════════════════════════════════════════════════
+
+💡 ALTERNATIVA:
+
+   Se preferir instalar diretamente no servidor
+   (com Python e dependências), vá para:
+   
+   Configuracao_Servidor\Scripts_Instalacao_Manual\
+
+
+═══════════════════════════════════════════════════════════════
+
+           Versão: 1.0 | Data: 30/09/2025
+
+═══════════════════════════════════════════════════════════════

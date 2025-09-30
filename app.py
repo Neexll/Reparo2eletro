@@ -658,4 +658,5 @@ def pecas_mensal_stats():
 if __name__ == '__main__':
     # Descomente a linha abaixo apenas na primeira execução para criar o banco de dados
     # init_db()
-    app.run(host='0.0.0.0', port=5000, debug=False)
+    # NOTA: Para usar em rede local, execute server.py ao invés deste arquivo
+    app.run(host='127.0.0.1', port=5000, debug=False)
