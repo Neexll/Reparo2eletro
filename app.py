@@ -53,7 +53,8 @@ def index():
     search_numero = request.args.get('numero_pedido', '')
 
     query = '''
-        SELECT p.id, p.numero_pedido, p.tecnico_nome, strftime('%d/%m/%Y %H:%M', p.data_criacao) as data_formatada,
+        SELECT p.id, p.numero_pedido, p.tecnico_nome, 
+               strftime('%d/%m/%Y %H:%M', datetime(p.data_criacao, 'localtime')) as data_formatada,
                GROUP_CONCAT(i.nome, ', ') as itens_defeituosos
         FROM pedidos p
         LEFT JOIN pecas i ON p.id = i.pedido_id
@@ -191,13 +192,19 @@ def add_peca_to_pedido(pedido_id):
 @app.route('/api/pecas/<int:peca_id>/defeitos')
 def get_defeitos(peca_id):
     db = get_db()
-    defeitos = db.execute(
-        'SELECT descricao FROM defeitos_comuns WHERE tipo_peca_id = ? ORDER BY descricao',
-        (peca_id,)
-    ).fetchall()
-    db.close()
-    # Converte o resultado para uma lista de strings
-    return jsonify([d['descricao'] for d in defeitos])
+    try:
+        defeitos = db.execute(
+            'SELECT descricao FROM defeitos_comuns WHERE tipo_peca_id = ? ORDER BY descricao',
+            (peca_id,)
+        ).fetchall()
+        # Converte o resultado para uma lista de strings
+        defeitos_lista = [defeito['descricao'] for defeito in defeitos]
+        return jsonify(defeitos_lista)
+    except Exception as e:
+        print(f"Erro ao buscar defeitos: {e}")
+        return jsonify([])
+    finally:
+        db.close()
 
 @app.route('/add_peca_tipo', methods=['POST'])
 def add_peca_tipo():
@@ -379,7 +386,7 @@ def export():
     ''').fetchall()
     pie_chart_data = db.execute('SELECT nome || \' - \' || defeito as label, COUNT(*) as total FROM pecas GROUP BY label ORDER BY total DESC').fetchall()
     bar_chart_stats = db.execute('''
-        SELECT strftime('%Y-%m', p.data_criacao) as mes, i.nome as peca_nome, COUNT(i.id) as total
+        SELECT strftime('%Y-%m', datetime(p.data_criacao, 'localtime')) as mes, i.nome as peca_nome, COUNT(i.id) as total
         FROM pedidos p JOIN pecas i ON p.id = i.pedido_id
         GROUP BY mes, peca_nome ORDER BY mes, peca_nome
     ''').fetchall()
@@ -458,7 +465,7 @@ def export_pdf():
 
     # 1. Dados para a lista de peças
     pecas_list = db.execute('''
-        SELECT p.numero_pedido, p.tecnico_nome, i.nome, i.defeito, STRFTIME('%d/%m/%Y', p.data_criacao) as data_formatada
+        SELECT p.numero_pedido, p.tecnico_nome, i.nome, i.defeito, STRFTIME('%d/%m/%Y', datetime(p.data_criacao, 'localtime')) as data_formatada
         FROM pedidos p JOIN pecas i ON p.id = i.pedido_id
         ORDER BY p.id DESC
     ''').fetchall()
@@ -473,7 +480,7 @@ def export_pdf():
 
     # 3. Dados para o gráfico de barras
     bar_chart_stats = db.execute('''
-        SELECT strftime('%Y-%m', p.data_criacao) as mes, i.nome as peca_nome, COUNT(i.id) as total
+        SELECT strftime('%Y-%m', datetime(p.data_criacao, 'localtime')) as mes, i.nome as peca_nome, COUNT(i.id) as total
         FROM pedidos p JOIN pecas i ON p.id = i.pedido_id
         GROUP BY mes, peca_nome
         ORDER BY mes, peca_nome
@@ -612,7 +619,7 @@ def pecas_mensal_stats():
     db = get_db()
     stats = db.execute('''
         SELECT 
-            strftime('%Y-%m', p.data_criacao) as mes,
+            strftime('%Y-%m', datetime(p.data_criacao, 'localtime')) as mes,
             i.nome as peca_nome,
             COUNT(i.id) as total
         FROM pedidos p

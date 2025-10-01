@@ -2,6 +2,12 @@
 
 {% block title %}Editar Pedido - Reparo2Eletro{% endblock %}
 
+{% block head %}
+{{ super() }}
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<link href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" rel="stylesheet" />
+{% endblock %}
+
 {% block content %}
     <div class="header-container fade-in">
         <h2><i class="fas fa-edit"></i> Editar Pedido de Reparo</h2>
@@ -17,7 +23,8 @@
                 </div>
                 <div class="form-group">
                     <label for="tecnico_nome"><i class="fas fa-user-tie"></i> Nome do Técnico</label>
-                    <select name="tecnico_nome" id="tecnico_nome" required>
+                    <select name="tecnico_nome" id="tecnico_nome" class="form-select" required>
+                        <option value="" disabled>Selecione ou digite...</option>
                         {% for tecnico in tecnicos %}
                             <option value="{{ tecnico.nome }}" {% if tecnico.nome == pedido.tecnico_nome %}selected{% endif %}>{{ tecnico.nome }}</option>
                         {% endfor %}
@@ -34,7 +41,8 @@
                         <div class="peca-row">
                             <div class="form-group">
                                 <label for="peca_nome"><i class="fas fa-cog"></i> Peça</label>
-                                <select name="peca_nome[]" class="peca-select" required>
+                                <select name="peca_nome[]" class="form-select peca-select" required>
+                                    <option value="">Selecione ou digite a peça...</option>
                                     {% for tipo in tipos_pecas %}
                                         <option value="{{ tipo.nome }}" data-id="{{ tipo.id }}" {% if tipo.nome == peca.nome %}selected{% endif %}>{{ tipo.nome }}</option>
                                     {% endfor %}
@@ -42,7 +50,7 @@
                             </div>
                             <div class="form-group">
                                 <label for="peca_defeito"><i class="fas fa-exclamation-triangle"></i> Defeito</label>
-                                <select name="peca_defeito[]" class="defeito-select" required>
+                                <select name="peca_defeito[]" class="form-select defeito-select" required>
                                     <option value="{{ peca.defeito }}" selected>{{ peca.defeito }}</option>
                                 </select>
                             </div>
@@ -64,78 +72,219 @@
         <div class="peca-row">
             <div class="form-group">
                 <label for="peca_nome"><i class="fas fa-cog"></i> Peça</label>
-                <select name="peca_nome[]" class="peca-select" required>
-                    <option value="" disabled selected>Selecione a peça...</option>
+                <input type="text" name="peca_nome[]" class="form-control peca-select" list="pecas-list" required>
+                <datalist id="pecas-list">
                     {% for tipo in tipos_pecas %}
                         <option value="{{ tipo.nome }}" data-id="{{ tipo.id }}">{{ tipo.nome }}</option>
                     {% endfor %}
-                </select>
+                </datalist>
             </div>
             <div class="form-group">
                 <label for="peca_defeito"><i class="fas fa-exclamation-triangle"></i> Defeito</label>
-                <select name="peca_defeito[]" class="defeito-select" required>
-                    <option value="" disabled selected>Selecione o defeito...</option>
-                </select>
+                <input type="text" name="peca_defeito[]" class="form-control defeito-select" list="defeitos-list" required>
+                <datalist id="defeitos-list">
+                </datalist>
             </div>
             <button type="button" class="btn btn-danger remove-peca-btn"><i class="fas fa-trash-alt"></i></button>
         </div>
     </template>
-
+    
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const pecasContainer = document.getElementById('pecas-container');
             const addPecaBtn = document.getElementById('add-peca-btn');
             const pecaTemplate = document.getElementById('peca-template');
 
+            // Inicializa o Select2 para o campo de técnico
+            $('#tecnico_nome').select2({
+                theme: 'bootstrap-5',
+                placeholder: 'Selecione ou digite o nome do técnico',
+                allowClear: true,
+                tags: true,
+                createTag: function (params) {
+                    return {
+                        id: params.term,
+                        text: params.term,
+                        newOption: true
+                    }
+                },
+                templateResult: function (data) {
+                    var $result = $("<span></span>");
+                    $result.text(data.text);
+                    if (data.newOption) {
+                        $result.append(" <em class='text-muted'>(novo)</em>");
+                    }
+                    return $result;
+                }
+            });
+
+            // Função para adicionar uma nova linha de peça
             function addPecaRow() {
                 const newRow = pecaTemplate.content.cloneNode(true);
                 pecasContainer.appendChild(newRow);
-                attachEventListeners(pecasContainer.lastElementChild);
+                const rowElement = pecasContainer.lastElementChild;
+                
+                // Inicializa os selects da nova linha
+                initPecaSelect(rowElement.querySelector('.peca-select'));
+                initDefeitoSelect(rowElement.querySelector('.defeito-select'));
+                
+                attachEventListeners(rowElement);
+            }
+            
+            // Função para inicializar o Select2 para um campo de peça
+            function initPecaSelect(select) {
+                $(select).select2({
+                    theme: 'bootstrap-5',
+                    placeholder: 'Selecione ou digite a peça',
+                    allowClear: true,
+                    tags: true,
+                    createTag: function (params) {
+                        return {
+                            id: params.term,
+                            text: params.term,
+                            newOption: true
+                        }
+                    },
+                    templateResult: function (data) {
+                        var $result = $("<span></span>");
+                        $result.text(data.text);
+                        if (data.newOption) {
+                            $result.append(" <em class='text-muted'>(novo)</em>");
+                        }
+                        return $result;
+                    }
+                });
+            }
+            
+            // Função para inicializar o Select2 para um campo de defeito
+            function initDefeitoSelect(select) {
+                $(select).select2({
+                    theme: 'bootstrap-5',
+                    placeholder: 'Selecione ou digite o defeito',
+                    allowClear: true,
+                    tags: true,
+                    createTag: function (params) {
+                        return {
+                            id: params.term,
+                            text: params.term,
+                            newOption: true
+                        }
+                    },
+                    templateResult: function (data) {
+                        var $result = $("<span></span>");
+                        $result.text(data.text);
+                        if (data.newOption) {
+                            $result.append(" <em class='text-muted'>(novo)</em>");
+                        }
+                        return $result;
+                    }
+                });
             }
 
-            function loadDefeitos(pecaSelect, defeitoSelect, selectedDefeito = null) {
+            // Função para carregar defeitos com base na peça selecionada
+            function loadDefeitos(pecaSelect, defeitoSelect) {
                 const selectedOption = pecaSelect.options[pecaSelect.selectedIndex];
-                const pecaId = selectedOption.dataset.id;
-
-                defeitoSelect.innerHTML = '<option value="" disabled selected>Carregando...</option>';
+                const pecaId = selectedOption ? selectedOption.dataset.id : null;
+                const $defeitoSelect = $(defeitoSelect);
+                
+                // Salva o valor atual para restaurar depois
+                const currentValue = $defeitoSelect.val();
+                
+                // Desabilita o select enquanto carrega
+                $defeitoSelect.prop('disabled', true);
+                $defeitoSelect.empty().append('<option value="" disabled selected>Carregando...</option>');
+                $defeitoSelect.trigger('change');
 
                 if (pecaId) {
                     fetch(`/api/pecas/${pecaId}/defeitos`)
                         .then(response => response.json())
                         .then(data => {
-                            defeitoSelect.innerHTML = '<option value="" disabled selected>Selecione o defeito...</option>';
+                            $defeitoSelect.empty();
+                            $defeitoSelect.append('<option value="" disabled selected>Selecione ou digite o defeito...</option>');
+                            
+                            // Adiciona os defeitos da API
                             data.forEach(defeito => {
-                                const option = new Option(defeito, defeito);
-                                if (defeito === selectedDefeito) {
-                                    option.selected = true;
-                                }
-                                defeitoSelect.add(option);
+                                $defeitoSelect.append(new Option(defeito, defeito));
                             });
+                            
+                            // Restaura o valor anterior se ainda existir
+                            if (currentValue && data.includes(currentValue)) {
+                                $defeitoSelect.val(currentValue);
+                            }
+                            
+                            $defeitoSelect.prop('disabled', false);
+                            $defeitoSelect.trigger('change');
+                        })
+                        .catch(error => {
+                            console.error('Erro ao buscar defeitos:', error);
+                            $defeitoSelect.empty().append('<option value="">Erro ao carregar os defeitos</option>');
+                            $defeitoSelect.prop('disabled', false);
+                            $defeitoSelect.trigger('change');
                         });
+                } else {
+                    $defeitoSelect.empty().append('<option value="" disabled selected>Selecione ou digite o defeito...</option>');
+                    $defeitoSelect.prop('disabled', false);
+                    $defeitoSelect.trigger('change');
                 }
             }
 
+            // Anexa os event listeners a uma linha de peça
             function attachEventListeners(row) {
                 const pecaSelect = row.querySelector('.peca-select');
                 const defeitoSelect = row.querySelector('.defeito-select');
                 const removeBtn = row.querySelector('.remove-peca-btn');
 
-                pecaSelect.addEventListener('change', () => loadDefeitos(pecaSelect, defeitoSelect));
-                removeBtn.addEventListener('click', () => row.remove());
-
-                // Se a linha já existe (não é uma nova), carrega os defeitos
-                if (pecaSelect.value) {
-                    const selectedDefeito = defeitoSelect.value;
-                    loadDefeitos(pecaSelect, defeitoSelect, selectedDefeito);
+                // Remove eventos anteriores para evitar duplicação
+                const newPecaSelect = pecaSelect.cloneNode(true);
+                pecaSelect.parentNode.replaceChild(newPecaSelect, pecaSelect);
+                
+                const newDefeitoSelect = defeitoSelect.cloneNode(true);
+                defeitoSelect.parentNode.replaceChild(newDefeitoSelect, defeitoSelect);
+                
+                // Inicializa os selects
+                initPecaSelect(newPecaSelect);
+                initDefeitoSelect(newDefeitoSelect);
+                
+                // Adiciona o evento de mudança
+                $(newPecaSelect).on('change', function() {
+                    loadDefeitos(this, newDefeitoSelect);
+                });
+                
+                // Adiciona o evento de remoção
+                removeBtn.addEventListener('click', function() {
+                    // Remove os eventos do Select2 antes de remover a linha
+                    $(newPecaSelect).select2('destroy');
+                    $(newDefeitoSelect).select2('destroy');
+                    row.remove();
+                });
+                
+                // Se já houver uma peça selecionada, carrega os defeitos
+                if (newPecaSelect.value) {
+                    loadDefeitos(newPecaSelect, newDefeitoSelect);
                 }
             }
 
-            // Anexa eventos para as linhas de peças existentes
+            // Adiciona a primeira linha de peça ao carregar a página
+            addPecaRow();
+
+            // Evento para o botão de adicionar nova peça
+            addPecaBtn.addEventListener('click', addPecaRow);
+            
+            // Impede o envio do formulário ao pressionar Enter em um campo de seleção
+            $(document).on('keydown', '.select2-search__field', function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    return false;
+                }
+            });
+            
+            // Inicializa as linhas de peças existentes
             document.querySelectorAll('.peca-row').forEach(row => {
                 attachEventListeners(row);
             });
-
-            addPecaBtn.addEventListener('click', addPecaRow);
         });
     </script>
+
 {% endblock %}
