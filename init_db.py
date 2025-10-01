@@ -1,13 +1,13 @@
 import sqlite3
 
-# Conecta ao banco de dados
+# Conecta ao banco de dados SQLite
 connection = sqlite3.connect('database.db')
 
-# Recria as tabelas a partir do schema.sql
-with open('schema.sql') as f:
+# Lê o arquivo schema.sql e executa os comandos SQL para criar as tabelas
+with open('schema.sql', encoding='utf-8') as f:
     connection.executescript(f.read())
 
-# Dados iniciais que estavam no app.py
+# Dicionário com os dados iniciais de peças e defeitos
 pecas_e_defeitos = {
     'H61': ['Pino LGA amassado', 'Não dá vídeo', 'BIOS corrompida', 'Porta SATA não funciona'],
     'H81': ['Não reconhece memórias', 'Rede não funciona', 'Portas USB em curto'],
@@ -16,17 +16,22 @@ pecas_e_defeitos = {
     'Memória RAM': ['Tela azul', 'Não da vídeo' , 'Travando'],
 }
 
+# Cria um cursor para executar comandos SQL
 cursor = connection.cursor()
 
-# Itera sobre os tipos de peças e insere no banco
+# Itera sobre cada tipo de peça e seus respectivos defeitos
 for peca_nome, defeitos in pecas_e_defeitos.items():
-    # Insere o tipo da peça e obtém o ID
+    # Insere o nome da peça na tabela tipos_pecas e obtém o ID gerado
     cursor.execute("INSERT INTO tipos_pecas (nome) VALUES (?)", (peca_nome,))
     tipo_peca_id = cursor.lastrowid
 
-    # Itera sobre os defeitos e os insere, associando ao tipo de peça
+    # Para cada defeito da peça, insere na tabela defeitos_comuns
+    # associando ao ID do tipo de peça
     for defeito in defeitos:
-        cursor.execute("INSERT INTO defeitos_comuns (descricao, tipo_peca_id) VALUES (?, ?)", (defeito, tipo_peca_id))
+        cursor.execute("""
+            INSERT INTO defeitos_comuns (descricao, tipo_peca_id) 
+            VALUES (?, ?)
+        """, (defeito, tipo_peca_id))
 
 # Adiciona alguns técnicos iniciais
 tecnicos_iniciais = ['Anderson', 'Carlos', 'Mariana']

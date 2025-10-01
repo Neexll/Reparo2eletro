@@ -18,16 +18,16 @@ def get_local_ip():
         return "127.0.0.1"
 
 def resource_path(relative_path):
-    """ Get absolute path to resource, works for dev and for PyInstaller """
+    """Obtém o caminho absoluto para um recurso, funciona tanto em desenvolvimento quanto no PyInstaller"""
     try:
-        # PyInstaller creates a temp folder and stores path in _MEIPASS
+        # O PyInstaller cria uma pasta temporária e armazena o caminho em _MEIPASS
         base_path = sys._MEIPASS
     except Exception:
         base_path = os.path.abspath(".")
     return os.path.join(base_path, relative_path)
 
 def run_app():
-    # Configura o servidor Flask para rodar apenas no localhost
+    # Configura o servidor Flask para rodar apenas no localhost (127.0.0.1)
     app.run(host='127.0.0.1', port=5000, debug=False, use_reloader=False)
 
 def open_browser():

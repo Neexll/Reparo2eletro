@@ -8,23 +8,27 @@ import socket
 from app import app
 
 def get_local_ip():
-    """Obtém o endereço IP local da máquina"""
+    """Obtém o endereço IP local da máquina na rede"""
     try:
+        # Cria um socket para conectar a um servidor externo e descobrir o IP local
         s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        s.connect(("8.8.8.8", 80))
-        ip = s.getsockname()[0]
+        s.connect(("8.8.8.8", 80))  # Conecta ao servidor DNS do Google
+        ip = s.getsockname()[0]  # Obtém o endereço IP local
         s.close()
         return ip
     except Exception:
+        # Retorna localhost em caso de erro
         return "127.0.0.1"
 
 if __name__ == '__main__':
-    # Define o diretório de trabalho
+    # Define o diretório de trabalho como o diretório do script
     os.chdir(os.path.dirname(os.path.abspath(__file__)))
     
+    # Obtém o IP local e define a porta
     local_ip = get_local_ip()
-    port = 5000
+    port = 5000  # Porta padrão do Flask
     
+    # Exibe o cabeçalho do servidor
     print("=" * 60)
     print("🖥️  SERVIDOR REPARO2ELETRO - MODO REDE")
     print("=" * 60)

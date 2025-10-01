@@ -24,7 +24,7 @@
                 <div class="form-group">
                     <label for="tecnico_nome"><i class="fas fa-user-tie"></i> Nome do Técnico</label>
                     <select name="tecnico_nome" id="tecnico_nome" class="form-select" required>
-                        <option value="" disabled selected>Selecione ou digite...</option>
+                        <option value="" disabled selected>Selecione o técnico...</option>
                         {% for tecnico in tecnicos %}
                             <option value="{{ tecnico.nome }}">{{ tecnico.nome }}</option>
                         {% endfor %}
@@ -52,7 +52,7 @@
             <div class="form-group">
                 <label for="peca_nome"><i class="fas fa-cog"></i> Peça</label>
                 <select name="peca_nome[]" class="form-select peca-select" required>
-                    <option value="" disabled selected>Selecione ou digite a peça...</option>
+                    <option value="" disabled selected>Pesquise e selecione a peça...</option>
                     {% for tipo in tipos_pecas %}
                         <option value="{{ tipo.nome }}" data-id="{{ tipo.id }}">{{ tipo.nome }}</option>
                     {% endfor %}
@@ -80,27 +80,13 @@
             addPecaBtn = document.getElementById('add-peca-btn');
             pecaTemplate = document.getElementById('peca-template');
 
-            // Inicializa o Select2 para o campo de técnico
+            // Inicializa o campo de técnico como um select simples
             $('#tecnico_nome').select2({
                 theme: 'bootstrap-5',
-                placeholder: 'Selecione ou digite o nome do técnico',
+                minimumResultsForSearch: -1,  // Desativa a barra de pesquisa
+                placeholder: 'Selecione o técnico',
                 allowClear: true,
-                tags: true,
-                createTag: function (params) {
-                    return {
-                        id: params.term,
-                        text: params.term,
-                        newOption: true
-                    }
-                },
-                templateResult: function (data) {
-                    var $result = $("<span></span>");
-                    $result.text(data.text);
-                    if (data.newOption) {
-                        $result.append(" <em class='text-muted'>(novo)</em>");
-                    }
-                    return $result;
-                }
+                width: '100%'
             });
 
             // Adiciona a primeira linha de peça
@@ -118,216 +104,175 @@
                     return false;
                 }
             });
-            // Validação do formulário
-            const form = document.querySelector('form');
-            if (form) {
-                form.addEventListener('submit', validateForm);
             }
-        }
-        
-        // Função para adicionar uma nova linha de peça
-        function addPecaRow() {
-            if (!pecaTemplate || !pecasContainer) return;
+
+            // Função para obter as peças já selecionadas
+            function getPecasSelecionadas(excludeSelect = null) {
+                const pecas = [];
+                document.querySelectorAll('.peca-select').forEach(select => {
+                    if (select !== excludeSelect && select.value) {
+                        pecas.push(select.value);
+                    }
+                });
+                return pecas;
+            }
+
+            // Função para atualizar as opções disponíveis no select de peças
+            function updatePecaOptions(selectElement) {
+                const pecasSelecionadas = getPecasSelecionadas(selectElement);
+                const currentValue = selectElement.value;
+                
+                // Habilita/desabilita as opções com base nas peças já selecionadas
+                $(selectElement).find('option').each(function() {
+                    const option = $(this);
+                    const optionValue = option.val();
+                    
+                    if (optionValue === '' || optionValue === currentValue) {
+                        option.prop('disabled', false);
+                    } else {
+                        option.prop('disabled', pecasSelecionadas.includes(optionValue));
+                    }
+                });
+                
+                // Atualiza o Select2 para refletir as mudanças
+                if ($(selectElement).data('select2')) {
+                    $(selectElement).trigger('change.select2');
+                }
+            }
+
+            // Função para adicionar uma nova linha de peça
+            function addPecaRow() {
+                if (!pecaTemplate || !pecasContainer) return;
+
+                const newRow = pecaTemplate.content.cloneNode(true);
+                pecasContainer.appendChild(newRow);
+                const rowElement = pecasContainer.lastElementChild;
+                
+                // Inicializa os selects da nova linha
+                const pecaSelect = rowElement.querySelector('.peca-select');
+                initPecaSelect(pecaSelect);
+                initDefeitoSelect(rowElement.querySelector('.defeito-select'));
+                
+                // Atualiza as opções disponíveis
+                updatePecaOptions(pecaSelect);
+                
+                // Adiciona o evento de mudança para atualizar as opções quando uma peça for selecionada
+                $(pecaSelect).on('change', function() {
+                    // Atualiza as opções em todos os selects de peça
+                    document.querySelectorAll('.peca-select').forEach(select => {
+                        updatePecaOptions(select);
+                    });
+                });
+                
+                // Adiciona o evento de clique no botão de remover peça
+                var removeBtn = rowElement.querySelector('.remove-peca-btn');
+                if (removeBtn) {
+                    removeBtn.addEventListener('click', function() {
+                        // Remove a linha da peça
+                        rowElement.remove();
+                        
+                        // Atualiza as opções de peças disponíveis
+                        document.querySelectorAll('.peca-select').forEach(function(select) {
+                            updatePecaOptions(select);
+                        });
+                    });
+                }
+            }
             
-            const newRow = pecaTemplate.content.cloneNode(true);
-            pecasContainer.appendChild(newRow);
-            const rowElement = pecasContainer.lastElementChild;
-            
-            // Inicializa os selects da nova linha
-            initPecaSelect(rowElement.querySelector('.peca-select'));
-            initDefeitoSelect(rowElement.querySelector('.defeito-select'));
-            
-            attachEventListeners(rowElement);
-        }
-            
-            // Função para inicializar o Select2 para um campo de peça
+            // Função para inicializar o Select2 para um campo de peça (apenas seleção)
             function initPecaSelect(select) {
                 $(select).select2({
                     theme: 'bootstrap-5',
+                    placeholder: 'Selecione a peça',
                     allowClear: true,
-                    tags: true,
+                    tags: false,
                     width: '100%',
-                    createTag: function (params) {
-                        // Não permite criar tags vazias
-                        if (params.term.trim() === '') {
-                            return null;
-                        }
-                        return {
-                            id: params.term,
-                            text: params.term,
-                            newOption: true
-                        };
-                    },
                     templateResult: function (data) {
                         if (!data.id) {
                             return data.text;
                         }
-                        var $result = $('<span>').text(data.text);
-                        if (data.newOption) {
-                            $result.append($('<span class="text-muted"> (novo)</span>'));
+                        const $result = $('<span>').text(data.text);
+                        if (data.element && $(data.element).is(':disabled')) {
+                            $result.addClass('text-muted');
                         }
                         return $result;
                     },
                     templateSelection: function(data) {
+                        if (!data.id) return data.text;
                         return data.text;
-                    }
-                });
-            }
-            
-            // Função para inicializar o Select2 para um campo de defeito
-            function initDefeitoSelect(select) {
-                $(select).select2({
-                    theme: 'bootstrap-5',
-                    placeholder: 'Selecione ou digite o defeito',
-                    allowClear: true,
-                    tags: true,
-                    width: '100%',
-                    createTag: function (params) {
-                        // Não permite criar tags vazias
-                        if (params.term.trim() === '') {
-                            return null;
-                        }
-                        return {
-                            id: params.term,
-                            text: params.term,
-                            newOption: true
-                        };
                     },
-                    templateResult: function (data) {
-                        if (!data.id) {
-                            return data.text;
-                        }
-                        var $result = $('<span>').text(data.text);
-                        if (data.newOption) {
-                            $result.append($('<span class="text-muted"> (novo)</span>'));
-                        }
-                        return $result;
-                    },
-                    templateSelection: function(data) {
-                        return data.text;
+                    escapeMarkup: function(m) { return m; }
+                });
+            }
+
+            // Função para validar o formulário
+            function validateForm(e) {
+                var isValid = true;
+                var pecaSelects = document.querySelectorAll('.peca-select');
+                var defeitoSelects = document.querySelectorAll('.defeito-select');
+                var pecasSelecionadas = new Set();
+                var hasDuplicates = false;
+
+                // Remove mensagens de erro anteriores
+                var errorElements = document.querySelectorAll('.error-message, .alert-danger');
+                for (var i = 0; i < errorElements.length; i++) {
+                    errorElements[i].parentNode.removeChild(errorElements[i]);
+                }
+
+                // Verifica campos vazios e duplicatas
+                for (var i = 0; i < pecaSelects.length; i++) {
+                    var select = pecaSelects[i];
+                    var index = i;
+                    if (!select.value) {
+                        isValid = false;
+                        var errorMsg = document.createElement('div');
+                        errorMsg.className = 'error-message text-danger mt-1';
+                        errorMsg.textContent = 'Por favor, selecione uma peça';
+                        select.parentNode.appendChild(errorMsg);
+                    } else if (pecasSelecionadas.has(select.value)) {
+                        hasDuplicates = true;
+                        var errorMsg = document.createElement('div');
+                        errorMsg.className = 'error-message text-danger mt-1';
+                        errorMsg.textContent = 'Esta peça já foi adicionada ao pedido';
+                        select.parentNode.appendChild(errorMsg);
+                        isValid = false;
+                    } else {
+                        pecasSelecionadas.add(select.value);
                     }
-                });
-            }
 
-            // Função para carregar defeitos com base na peça selecionada
-            function loadDefeitos(pecaSelect, defeitoSelect) {
-                const selectedOption = pecaSelect.options[pecaSelect.selectedIndex];
-                const pecaId = selectedOption ? selectedOption.dataset.id : null;
-                const $defeitoSelect = $(defeitoSelect);
-                
-                // Salva o valor atual para restaurar depois
-                const currentValue = $defeitoSelect.val();
-                
-                // Desabilita o select enquanto carrega
-                $defeitoSelect.prop('disabled', true);
-                $defeitoSelect.empty().append('<option value="" disabled selected>Carregando...</option>');
-                $defeitoSelect.trigger('change');
-
-                if (pecaId) {
-                    fetch(`/api/pecas/${pecaId}/defeitos`)
-                        .then(response => {
-                            if (!response.ok) {
-                                throw new Error('Erro ao carregar os defeitos');
-                            }
-                            return response.json();
-                        })
-                        .then(data => {
-                            $defeitoSelect.empty();
-                            $defeitoSelect.append('<option value="" disabled selected>Selecione ou digite o defeito...</option>');
-                            
-                            // Adiciona os defeitos da API
-                            if (data && data.length > 0) {
-                                data.forEach(defeito => {
-                                    const descricao = typeof defeito === 'object' ? defeito.descricao : defeito;
-                                    $defeitoSelect.append(new Option(descricao, descricao));
-                                });
-                            }
-                            
-                            // Habilita a digitação de novos defeitos
-                            $defeitoSelect.prop('disabled', false);
-                            $defeitoSelect.trigger('change');
-                            
-                            // Restaura o valor anterior se existir
-                            if (currentValue) {
-                                $defeitoSelect.val(currentValue).trigger('change');
-                            }
-                        })
-                        .catch(error => {
-                            console.error('Erro ao buscar defeitos:', error);
-                            $defeitoSelect.empty().append('<option value="">Selecione ou digite o defeito...</option>');
-                        });
-                } else {
-                    $defeitoSelect.empty().append('<option value="" disabled selected>Selecione ou digite o defeito...</option>').prop('disabled', false).trigger('change');
+                    // Valida o campo de defeito
+                    if (!defeitoSelects[index] || !defeitoSelects[index].value) {
+                        isValid = false;
+                        var errorContainer = defeitoSelects[index] ?
+                            defeitoSelects[index].parentNode : select.parentNode;
+                        var errorMsg = document.createElement('div');
+                        errorMsg.className = 'error-message text-danger mt-1';
+                        errorMsg.textContent = 'Por favor, selecione um defeito';
+                        errorContainer.appendChild(errorMsg);
+                    }
                 }
-            }
-            
-            // Anexa os event listeners a uma linha de peça
-            function attachEventListeners(row) {
-                const pecaSelect = row.querySelector('.peca-select');
-                const defeitoSelect = row.querySelector('.defeito-select');
-                const removeBtn = row.querySelector('.remove-peca-btn');
-                const newPecaSelect = pecaSelect.cloneNode(true);
-                pecaSelect.parentNode.replaceChild(newPecaSelect, pecaSelect);
-                
-                const newDefeitoSelect = defeitoSelect.cloneNode(true);
-                defeitoSelect.parentNode.replaceChild(newDefeitoSelect, defeitoSelect);
-                
-                // Inicializa os selects
-                initPecaSelect(newPecaSelect);
-                initDefeitoSelect(newDefeitoSelect);
-                
-                // Adiciona o evento de mudança
-                $(newPecaSelect).on('change', function() {
-                    loadDefeitos(this, newDefeitoSelect);
-                });
-                
-                // Adiciona o evento de remoção
-                removeBtn.addEventListener('click', function() {
-                    // Remove os eventos do Select2 antes de remover a linha
-                    $(newPecaSelect).select2('destroy');
-                    $(newDefeitoSelect).select2('destroy');
-                    row.remove();
-                });
-            }
 
-        // Função para validar o formulário
-        function validateForm(e) {
-            let isValid = true;
-            const pecaSelects = document.querySelectorAll('.peca-select');
-            const defeitoSelects = document.querySelectorAll('.defeito-select');
-            
-            // Remove mensagens de erro anteriores
-            document.querySelectorAll('.error-message').forEach(el => el.remove());
-            
-            pecaSelects.forEach((select, index) => {
-                if (!select.value) {
-                    isValid = false;
-                    const errorMsg = document.createElement('div');
-                    errorMsg.className = 'error-message text-danger mt-1';
-                    errorMsg.textContent = 'Por favor, selecione uma peça';
-                    select.parentNode.appendChild(errorMsg);
+                // Exibe mensagem de erro para duplicatas
+                if (hasDuplicates) {
+                    var errorMsg = document.createElement('div');
+                    errorMsg.className = 'alert alert-danger mt-3';
+                    errorMsg.textContent = 'Não é permitido adicionar a mesma peça mais de uma vez no mesmo pedido.';
+                    
+                    // Insere a mensagem antes do botão de adicionar peça
+                    var addButton = document.getElementById('add-peca-btn');
+                    if (addButton && addButton.parentNode) {
+                        addButton.parentNode.insertBefore(errorMsg, addButton);
+                    }
                 }
-                
-                if (!defeitoSelects[index] || !defeitoSelects[index].value) {
-                    isValid = false;
-                    const errorContainer = defeitoSelects[index] ? 
-                        defeitoSelects[index].parentNode : select.parentNode;
-                    const errorMsg = document.createElement('div');
-                    errorMsg.className = 'error-message text-danger mt-1';
-                    errorMsg.textContent = 'Por favor, selecione ou digite um defeito';
-                    errorContainer.appendChild(errorMsg);
+
+                // Impede o envio do formulário se houver erros
+                if (!isValid || hasDuplicates) {
+                    e.preventDefault();
+                    return false;
                 }
-            });
-            
-            if (!isValid) {
-                e.preventDefault();
-                return false;
+                return true;
             }
-            return true;
-        }
 
-        // Inicializa a página quando o DOM estiver pronto
-        document.addEventListener('DOMContentLoaded', initPage);
-    </script>
-
+            // Inicializa a página quando o DOM estiver pronto
+            document.addEventListener('DOMContentLoaded', initPage);
 {% endblock %}

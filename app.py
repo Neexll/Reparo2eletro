@@ -13,10 +13,12 @@ import collections
 from fpdf import FPDF
 import matplotlib.pyplot as plt
 import matplotlib
-matplotlib.use('Agg')  # Use Agg backend for non-interactive plotting
+# Usa o backend Agg para plotagem não interativa
+matplotlib.use('Agg')
 
 app = Flask(__name__)
-app.secret_key = 'sua_chave_secreta_aqui'  # Necessário para sessões e mensagens flash
+# Chave secreta necessária para sessões e mensagens flash
+app.secret_key = 'sua_chave_secreta_aqui'
 
 # Configuração do banco de dados
 def init_db():
