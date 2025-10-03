@@ -15,7 +15,7 @@
             </div>
         </form>
         <div class="header-actions">
-            <a href="{{ url_for('add_pedido') }}" class="btn btn-primary">
+            <a href="{{ url_for('add_pedido', _external=True) }}" class="btn btn-primary">
                 <i class="fas fa-plus"></i> Novo Pedido
             </a>
         </div>
@@ -29,6 +29,7 @@
                         <tr>
                             <th><i class="fas fa-hashtag"></i> Pedido</th>
                             <th><i class="fas fa-user-tie"></i> Técnico</th>
+                            <th><i class="fas fa-list-ol"></i> Linha</th>
                             <th><i class="fas fa-tools"></i> Itens Defeituosos</th>
                             <th><i class="far fa-calendar-alt"></i> Data de Criação</th>
                             <th><i class="fas fa-cog"></i> Ações</th>
@@ -39,6 +40,7 @@
                             <tr>
                                 <td><strong>{{ pedido.numero_pedido }}</strong></td>
                                 <td>{{ pedido.tecnico_nome }}</td>
+                                <td>Linha {{ pedido.linha }}</td>
                                 <td>
                                     {{ pedido.itens_defeituosos or 'Nenhuma' }}
                                 </td>
@@ -67,7 +69,7 @@
                     <i class="fas fa-inbox"></i>
                     <h3>Nenhum pedido cadastrado</h3>
                     <p>Comece criando seu primeiro pedido de reparo.</p>
-                    <a href="{{ url_for('add_pedido') }}" class="btn btn-primary">
+                    <a href="{{ url_for('add_pedido', _external=True) }}" class="btn btn-primary">
                         <i class="fas fa-plus"></i> Criar Novo Pedido
                     </a>
                 </div>

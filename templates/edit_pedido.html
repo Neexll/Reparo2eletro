@@ -30,6 +30,16 @@
                         {% endfor %}
                     </select>
                 </div>
+                <div class="form-group">
+                    <label for="linha"><i class="fas fa-list-ol"></i> Linha</label>
+                    <select name="linha" id="linha" class="form-select" required>
+                        <option value="" disabled>Selecione a linha...</option>
+                        <option value="1" {% if pedido.linha == 1 %}selected{% endif %}>Linha 1</option>
+                        <option value="2" {% if pedido.linha == 2 %}selected{% endif %}>Linha 2</option>
+                        <option value="3" {% if pedido.linha == 3 %}selected{% endif %}>Linha 3</option>
+                        <option value="4" {% if pedido.linha == 4 %}selected{% endif %}>Linha 4</option>
+                    </select>
+                </div>
             </div>
 
             <hr>

@@ -1,0 +1,789 @@
+{% extends 'base.html' %}
+
+{% block title %}Criar Novo Pedido - Reparo2Eletro{% endblock %}
+
+{% block head %}
+{{ super() }}
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<link href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" rel="stylesheet" />
+<style>
+/* Select2 Styles */
+.select2-container {
+    position: relative;
+    z-index: 1;
+    width: 100% !important;
+    display: block;
+}
+
+.select2-container--default .select2-selection--single {
+    height: 40px !important;
+    padding: 0.5rem 0.75rem;
+    font-size: 0.95rem;
+    line-height: 1.5;
+    color: #495057;
+    background-color: #fff;
+    border: 1px solid #dee2e6;
+    border-radius: 0.375rem;
+    transition: all 0.15s ease-in-out;
+}
+
+.select2-container--default .select2-selection--single:focus {
+    border-color: #0d6efd;
+    box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+}
+
+.select2-container--default .select2-selection--single .select2-selection__arrow {
+    height: 38px;
+}
+
+.select2-dropdown {
+    border: 1px solid #dee2e6 !important;
+    border-radius: 0.375rem !important;
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+    z-index: 9999 !important;
+}
+
+/* Main Layout Styles */
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.form-grid-full {
+    grid-column: 1 / -1;
+}
+
+.form-label {
+    font-weight: 500;
+    color: #344054;
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.9rem;
+}
+
+.form-control, .form-select {
+    height: 40px;
+    padding: 0.5rem 0.75rem;
+    font-size: 0.95rem;
+    border: 1px solid #dee2e6;
+    border-radius: 0.375rem;
+    transition: all 0.15s ease-in-out;
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: #0d6efd;
+    box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+}
+
+/* Peça Row Horizontal Layout */
+.peca-row {
+    display: grid;
+    grid-template-columns: 2fr 3fr auto;
+    gap: 1rem;
+    align-items: start;
+    padding: 1.25rem;
+    background: #f8f9fa;
+    border-radius: 0.5rem;
+    margin-bottom: 1rem;
+    border: 1px solid #e9ecef;
+}
+
+.peca-row:hover {
+    background: #f1f3f5;
+    border-color: #dee2e6;
+}
+
+.form-field {
+    display: flex;
+    flex-direction: column;
+}
+
+.remove-peca-btn {
+    height: 40px;
+    width: 40px;
+    align-self: flex-end;
+    border-radius: 0.375rem;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.15s ease-in-out;
+}
+
+.remove-peca-btn:hover {
+    transform: scale(1.05);
+}
+
+/* Defeito Container */
+.defeito-container {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.defeito-select-wrapper {
+    position: relative;
+}
+
+.defeito-manual-group {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.defeito-manual-input {
+    flex: 1;
+    height: 38px;
+    border-radius: 0.375rem;
+}
+
+.usar-manual-btn {
+    height: 38px;
+    padding: 0 1rem;
+    white-space: nowrap;
+    border-radius: 0.375rem;
+}
+
+/* Card Styles */
+.card {
+    border: none;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    border-radius: 0.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.card-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    padding: 1.25rem;
+    border-radius: 0.5rem 0.5rem 0 0;
+}
+
+.card-header h5 {
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.card-body {
+    padding: 1.5rem;
+}
+
+/* Buttons */
+.btn {
+    padding: 0.6rem 1.2rem;
+    font-weight: 500;
+    border-radius: 0.375rem;
+    transition: all 0.15s ease-in-out;
+}
+
+.btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border: none;
+}
+
+.btn-success {
+    background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+    border: none;
+}
+
+.btn-danger {
+    background: linear-gradient(135deg, #eb3349 0%, #f45c43 100%);
+    border: none;
+}
+
+/* Page Header */
+.page-header {
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid #e9ecef;
+}
+
+.page-header h2 {
+    font-weight: 700;
+    color: #1a202c;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 1.75rem;
+}
+
+.page-header h2 i {
+    color: #667eea;
+}
+
+/* Empty State */
+.empty-state {
+    text-align: center;
+    padding: 2rem;
+    color: #6c757d;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .peca-row {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+    
+    .form-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .remove-peca-btn {
+        width: 100%;
+    }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="page-header">
+        <h2><i class="fas fa-plus-circle"></i> Criar Novo Pedido</h2>
+    </div>
+    
+    <form method="POST" action="{{ url_for('add_pedido') }}" onsubmit="return validarFormulario()">
+        <!-- Informações do Pedido -->
+        <div class="card">
+            <div class="card-header">
+                <h5><i class="fas fa-info-circle"></i> Informações do Pedido</h5>
+            </div>
+            <div class="card-body">
+                <div class="form-grid">
+                    <div class="form-field">
+                        <label for="cliente" class="form-label">
+                            <i class="fas fa-user"></i> Cliente
+                        </label>
+                        <input type="text" class="form-control" id="cliente" name="cliente" placeholder="Nome do cliente" required>
+                    </div>
+                    
+                    <div class="form-field">
+                        <label for="telefone" class="form-label">
+                            <i class="fas fa-phone"></i> Telefone
+                        </label>
+                        <input type="tel" class="form-control" id="telefone" name="telefone" placeholder="(00) 00000-0000" required>
+                    </div>
+                    
+                    <div class="form-field">
+                        <label for="tecnico" class="form-label">
+                            <i class="fas fa-user-tie"></i> Técnico
+                        </label>
+                        <select class="form-select select2" id="tecnico" name="tecnico" required>
+                            <option value="" disabled selected>Selecione o técnico...</option>
+                            {% for tecnico in tecnicos %}
+                                <option value="{{ tecnico.id }}">{{ tecnico.nome }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    
+                    <div class="form-field">
+                        <label for="linha" class="form-label">
+                            <i class="fas fa-tag"></i> Linha
+                        </label>
+                        <select class="form-select select2" id="linha" name="linha" required>
+                            <option value="" disabled selected>Selecione a linha...</option>
+                            <option value="Branca">Branca</option>
+                            <option value="Preta">Preta</option>
+                            <option value="Azul">Azul</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-field form-grid-full">
+                        <label for="observacao" class="form-label">
+                            <i class="fas fa-sticky-note"></i> Observações
+                        </label>
+                        <textarea class="form-control" id="observacao" name="observacao" rows="3" placeholder="Observações adicionais (opcional)" style="height: auto;"></textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Peças com Defeito -->
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5><i class="fas fa-cogs"></i> Peças com Defeito</h5>
+                <button type="button" id="add-peca-btn" class="btn btn-light btn-sm">
+                    <i class="fas fa-plus"></i> Adicionar Peça
+                </button>
+            </div>
+            <div class="card-body">
+                <div id="pecas-container"></div>
+                <div id="empty-state" class="empty-state">
+                    <i class="fas fa-box-open fa-3x mb-3"></i>
+                    <p>Nenhuma peça adicionada ainda. Clique em "Adicionar Peça" para começar.</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Ações -->
+        <div class="d-flex justify-content-end gap-3 mt-4 mb-5">
+            <a href="{{ url_for('index') }}" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i> Voltar
+            </a>
+            <button type="submit" class="btn btn-success">
+                <i class="fas fa-save"></i> Salvar Pedido
+            </button>
+        </div>
+    </form>
+</div>
+
+<!-- Template para uma nova linha de peça -->
+<template id="peca-template">
+    <div class="peca-row">
+        <div class="form-field">
+            <label class="form-label">
+                <i class="fas fa-cog"></i> Peça
+            </label>
+            <select name="peca_nome[]" class="form-select" required onchange="atualizarDefeitos(this)">
+                <option value="" disabled selected>Selecione a peça...</option>
+                {% for tipo in tipos_pecas %}
+                    <option value="{{ tipo.nome }}" data-id="{{ tipo.id }}">{{ tipo.nome }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        
+        <div class="form-field">
+            <label class="form-label">
+                <i class="fas fa-exclamation-triangle"></i> Defeito
+            </label>
+            <div class="defeito-container">
+                <div class="defeito-select-wrapper">
+                    <select name="peca_defeito[]" class="form-select defeito-select" required>
+                        <option value="" disabled selected>Selecione uma peça primeiro...</option>
+                    </select>
+                </div>
+                <div class="defeito-manual-group">
+                    <input type="text" class="form-control defeito-manual-input" placeholder="ou digite o defeito manualmente">
+                    <button type="button" class="btn btn-outline-secondary usar-manual-btn">Usar</button>
+                </div>
+                <input type="hidden" name="defeito_manual[]" class="defeito-manual-hidden" value="">
+            </div>
+        </div>
+        
+        <button type="button" class="btn btn-danger remove-peca-btn" title="Remover peça">
+            <i class="fas fa-trash-alt"></i>
+        </button>
+    </div>
+</template>
+
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script>
+// <![CDATA[
+// Variáveis globais
+let pecasContainer, addPecaBtn, pecaTemplate, emptyState;
+
+// Função para atualizar o estado vazio
+function updateEmptyState() {
+    const pecas = pecasContainer.querySelectorAll('.peca-row');
+    if (pecas.length === 0) {
+        emptyState.style.display = 'block';
+    } else {
+        emptyState.style.display = 'none';
+    }
+}
+
+// Função para adicionar uma nova linha de peça
+function addPecaRow() {
+    console.log('Adicionando nova linha de peça...');
+    
+    try {
+        // Cria um novo elemento a partir do template
+        const newRow = pecaTemplate.content.cloneNode(true);
+        const newRowElement = newRow.querySelector('.peca-row');
+        
+        if (!newRowElement) {
+            throw new Error('Template de peça não encontrado');
+        }
+        
+        // Cria um novo elemento div para conter a linha
+        const rowContainer = document.createElement('div');
+        rowContainer.className = 'peca-row-container';
+        rowContainer.appendChild(newRowElement);
+        
+        // Adiciona a nova linha ao container
+        pecasContainer.appendChild(rowContainer);
+        
+        // Atualiza o estado vazio
+        updateEmptyState();
+        
+        // Inicializa os eventos para a nova linha
+        initDefeitoManualEventsForRow(rowContainer);
+        
+        // Adiciona evento para o botão de remover
+        const removeBtn = rowContainer.querySelector('.remove-peca-btn');
+        if (removeBtn) {
+            removeBtn.addEventListener('click', function() {
+                rowContainer.remove();
+                updateEmptyState();
+            });
+        }
+        
+        console.log('Nova linha de peça adicionada com sucesso');
+        
+    } catch (error) {
+        console.error('Erro ao adicionar nova linha de peça:', error);
+        alert('Ocorreu um erro ao adicionar uma nova peça. Por favor, tente novamente.');
+    }
+}
+
+// Função para atualizar os defeitos quando uma peça é selecionada
+function atualizarDefeitos(selectElement) {
+    const pecaRow = selectElement.closest('.peca-row');
+    const pecaId = selectElement.options[selectElement.selectedIndex].getAttribute('data-id');
+    const defeitoSelect = pecaRow.querySelector('select[name="peca_defeito[]"]');
+    const defeitoManualInput = pecaRow.querySelector('.defeito-manual-input');
+    const defeitoManualHidden = pecaRow.querySelector('.defeito-manual-hidden');
+    
+    // Reseta o campo de defeito manual
+    defeitoManualInput.value = '';
+    defeitoManualHidden.value = '';
+    
+    // Destrói o Select2 se já estiver inicializado
+    if ($(defeitoSelect).hasClass('select2-hidden-accessible')) {
+        $(defeitoSelect).select2('destroy');
+    }
+    
+    if (pecaId) {
+        // Limpa as opções atuais
+        while (defeitoSelect.options.length > 0) {
+            defeitoSelect.remove(0);
+        }
+        
+        // Adiciona a opção padrão de carregamento
+        const loadingOption = document.createElement('option');
+        loadingOption.value = '';
+        loadingOption.disabled = true;
+        loadingOption.selected = true;
+        loadingOption.textContent = 'Carregando defeitos...';
+        defeitoSelect.appendChild(loadingOption);
+        
+        // Habilita o botão de usar manual
+        const usarManualBtn = pecaRow.querySelector('.usar-manual-btn');
+        if (usarManualBtn) {
+            usarManualBtn.disabled = false;
+        }
+        
+        // Busca os defeitos para a peça selecionada
+        fetch(`/api/pecas/${pecaId}/defeitos`)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Erro ao carregar defeitos');
+                }
+                return response.json();
+            })
+            .then(defeitos => {
+                // Remove a opção de carregamento
+                while (defeitoSelect.options.length > 0) {
+                    defeitoSelect.remove(0);
+                }
+                
+                // Adiciona a opção padrão
+                const defaultOption = document.createElement('option');
+                defaultOption.value = '';
+                defaultOption.disabled = true;
+                defaultOption.selected = true;
+                defaultOption.textContent = 'Selecione o defeito...';
+                defeitoSelect.appendChild(defaultOption);
+                
+                // Adiciona a opção para digitar manualmente
+                const manualOption = document.createElement('option');
+                manualOption.value = 'manual';
+                manualOption.textContent = 'Digitar defeito manualmente...';
+                defeitoSelect.appendChild(manualOption);
+                
+                // Adiciona um separador
+                const separator = document.createElement('option');
+                separator.disabled = true;
+                separator.textContent = '──────────────';
+                defeitoSelect.appendChild(separator);
+                
+                // Adiciona os defeitos retornados
+                if (Array.isArray(defeitos) && defeitos.length > 0) {
+                    defeitos.forEach((defeito, index) => {
+                        const option = document.createElement('option');
+                        option.value = defeito; // Usa o texto do defeito como valor
+                        option.textContent = defeito;
+                        defeitoSelect.appendChild(option);
+                    });
+                    
+                    // Inicializa o Select2 com as configurações corretas
+                    $(defeitoSelect).select2({
+                        theme: 'bootstrap-5',
+                        width: '100%',
+                        dropdownAutoWidth: true,
+                        dropdownParent: $(defeitoSelect).closest('.card-body')
+                    });
+                    
+                    // Força o posicionamento correto do dropdown
+                    $(defeitoSelect).on('select2:open', function(e) {
+                        const $dropdown = $('.select2-dropdown');
+                        const $select2 = $(e.target);
+                        const $container = $select2.closest('.card-body');
+                        
+                        // Remove qualquer estilo que possa estar afetando o posicionamento
+                        $dropdown.attr('style', '');
+                        
+                        // Obtém a posição do select em relação ao container
+                        const selectRect = $select2[0].getBoundingClientRect();
+                        const containerRect = $container[0].getBoundingClientRect();
+                        
+                        // Calcula a posição correta
+                        const top = selectRect.bottom - containerRect.top + window.scrollY + 4;
+                        const left = selectRect.left - containerRect.left;
+                        
+                        // Aplica os estilos diretamente
+                        $dropdown.css({
+                            'position': 'absolute',
+                            'top': top + 'px',
+                            'left': left + 'px',
+                            'width': selectRect.width + 'px',
+                            'min-width': '100%',
+                            'z-index': '9999',
+                            'margin': '0',
+                            'transform': 'none',
+                            'will-change': 'transform'
+                        });
+                    });
+                } else {
+                    const option = document.createElement('option');
+                    option.value = '';
+                    option.disabled = true;
+                    option.textContent = 'Nenhum defeito cadastrado';
+                    defeitoSelect.appendChild(option);
+                }
+            })
+            .catch(error => {
+                console.error('Erro ao carregar defeitos:', error);
+                
+                // Remove a opção de carregamento
+                while (defeitoSelect.options.length > 0) {
+                    defeitoSelect.remove(0);
+                }
+                
+                const option = document.createElement('option');
+                option.value = '';
+                option.disabled = true;
+                option.selected = true;
+                option.textContent = 'Erro ao carregar defeitos';
+                defeitoSelect.appendChild(option);
+                
+                // Habilita o botão de usar manual mesmo em caso de erro
+                const usarManualBtn = pecaRow.querySelector('.usar-manual-btn');
+                if (usarManualBtn) {
+                    usarManualBtn.disabled = false;
+                }
+            });
+    } else {
+        // Limpa o select de defeitos se nenhuma peça estiver selecionada
+        while (defeitoSelect.options.length > 0) {
+            defeitoSelect.remove(0);
+        }
+        
+        const option = document.createElement('option');
+        option.value = '';
+        option.disabled = true;
+        option.selected = true;
+        option.textContent = 'Selecione uma peça primeiro';
+        defeitoSelect.appendChild(option);
+        
+        // Desabilita o botão de usar manual
+        const usarManualBtn = pecaRow.querySelector('.usar-manual-btn');
+        if (usarManualBtn) {
+            usarManualBtn.disabled = true;
+        }
+    }
+}
+
+// Função para inicializar os eventos de defeito manual para uma linha específica
+function initDefeitoManualEventsForRow(rowContainer) {
+    // Encontra os elementos necessários
+    const defeitoSelect = rowContainer.querySelector('select[name="peca_defeito[]"]');
+    const inputManual = rowContainer.querySelector('.defeito-manual-input');
+    const defeitoHidden = rowContainer.querySelector('.defeito-manual-hidden');
+    const usarManualBtn = rowContainer.querySelector('.usar-manual-btn');
+    
+    if (!defeitoSelect || !inputManual || !defeitoHidden || !usarManualBtn) {
+        console.warn('Elementos para defeito manual não encontrados na linha');
+        return;
+    }
+    
+    // Evento de mudança no select de defeito
+    defeitoSelect.addEventListener('change', function() {
+        if (this.value === 'manual') {
+            // Ativa o modo manual
+            inputManual.focus();
+        }
+    });
+    
+    // Evento de clique no botão de usar manual
+    usarManualBtn.addEventListener('click', function() {
+        if (inputManual.value.trim() !== '') {
+            // Atualiza o valor do campo oculto
+            defeitoHidden.value = inputManual.value.trim();
+            
+            // Marca como selecionado o primeiro item (que é o placeholder)
+            if (defeitoSelect.options.length > 0) {
+                defeitoSelect.selectedIndex = 0;
+            }
+            
+            // Feedback visual
+            inputManual.style.borderColor = '#38ef7d';
+            setTimeout(() => {
+                inputManual.style.borderColor = '';
+            }, 1000);
+            
+            // Atualiza o texto do botão temporariamente
+            const originalText = this.innerHTML;
+            this.innerHTML = '<i class="fas fa-check"></i> Salvo';
+            setTimeout(() => {
+                this.innerHTML = originalText;
+            }, 2000);
+        } else {
+            alert('Por favor, digite um defeito antes de confirmar.');
+            inputManual.focus();
+        }
+    });
+    
+    // Evento de tecla Enter no campo de texto
+    inputManual.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            usarManualBtn.click();
+        }
+    });
+}
+
+// Função para validar o formulário antes do envio
+function validarFormulario() {
+    let isValid = true;
+    
+    // Remove mensagens de erro anteriores
+    document.querySelectorAll('.error-message').forEach(el => el.remove());
+    
+    // Valida se pelo menos uma peça foi adicionada
+    const pecas = document.querySelectorAll('.peca-row');
+    if (pecas.length === 0) {
+        const errorMsg = document.createElement('div');
+        errorMsg.className = 'alert alert-danger mt-3';
+        errorMsg.textContent = 'Adicione pelo menos uma peça ao pedido.';
+        
+        // Insere a mensagem antes do botão de adicionar peça
+        const addButton = document.getElementById('add-peca-btn');
+        if (addButton && addButton.parentNode) {
+            addButton.parentNode.insertBefore(errorMsg, addButton);
+        }
+        
+        isValid = false;
+    }
+    
+    // Valida se todos os campos obrigatórios estão preenchidos
+    document.querySelectorAll('input[required], select[required]').forEach(field => {
+        if (!field.value.trim()) {
+            field.classList.add('is-invalid');
+            isValid = false;
+        } else {
+            field.classList.remove('is-invalid');
+        }
+    });
+    
+    // Valida se todos os defeitos foram preenchidos
+    document.querySelectorAll('.peca-row').forEach(pecaRow => {
+        const defeitoSelect = pecaRow.querySelector('select[name="peca_defeito[]"]');
+        const defeitoHidden = pecaRow.querySelector('.defeito-manual-hidden');
+        
+        if (!defeitoSelect.value && !defeitoHidden.value) {
+            alert('Por favor, selecione um defeito para a peça.');
+            isValid = false;
+        }
+    });
+    
+    return isValid;
+}
+
+// Inicializa a página quando o DOM estiver pronto
+function initPage() {
+    console.log('Iniciando inicialização da página...');
+    
+    // Inicializa as variáveis globais
+    pecasContainer = document.getElementById('pecas-container');
+    addPecaBtn = document.getElementById('add-peca-btn');
+    pecaTemplate = document.getElementById('peca-template');
+    emptyState = document.getElementById('empty-state');
+    
+    // Verifica se os elementos necessários existem
+    if (!pecasContainer || !addPecaBtn || !pecaTemplate || !emptyState) {
+        console.error('Elementos necessários não encontrados:', {
+            pecasContainer: !!pecasContainer,
+            addPecaBtn: !!addPecaBtn,
+            pecaTemplate: !!pecaTemplate,
+            emptyState: !!emptyState
+        });
+        alert('Erro ao carregar a página. Por favor, recarregue.');
+        return;
+    }
+    
+    // Atualiza o estado vazio inicial
+    updateEmptyState();
+    
+    // Configura o evento de clique para o botão de adicionar peça
+    console.log('Configurando botão de adicionar peça...');
+    addPecaBtn.addEventListener('click', function(e) {
+        console.log('Botão clicado!');
+        e.preventDefault();
+        addPecaRow();
+    });
+    
+    // Inicializa o Select2 para os campos de técnico e linha
+    if (typeof jQuery != 'undefined' && jQuery.fn.select2) {
+        console.log('Inicializando Select2...');
+        $('.select2').select2({
+            theme: 'bootstrap-5',
+            width: '100%',
+            dropdownAutoWidth: true,
+            dropdownParent: $('body')
+        });
+        
+        // Ajusta o z-index do dropdown do Select2
+        $(document).on('select2:open', function() {
+            setTimeout(function() {
+                const $dropdown = $('.select2-dropdown');
+                if ($dropdown.length) {
+                    $dropdown.css('z-index', '99999');
+                }
+            }, 10);
+        });
+        
+        console.log('Select2 inicializado com sucesso');
+    }
+}
+
+// Inicializa a página quando o DOM estiver pronto
+if (document.readyState === 'loading') {
+    console.log('DOM ainda não carregado, aguardando...');
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('DOM completamente carregado, inicializando...');
+        initPage();
+    });
+} else {
+    console.log('DOM já carregado, inicializando imediatamente...');
+    initPage();
+}
+// ]]>
+</script>
+{% endblock %}

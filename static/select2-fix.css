@@ -1,0 +1,73 @@
+/* Fix para o posicionamento do Select2 */
+
+/* Remove qualquer estilo de overflow que possa estar cortando o dropdown */
+.form-container,
+.card,
+.modal-content,
+.container {
+    overflow: visible !important;
+}
+
+/* Ajusta o z-index e posicionamento do dropdown */
+.select2-container--open .select2-dropdown {
+    position: fixed !important;
+    z-index: 99999 !important;
+    width: auto !important;
+    min-width: 200px;
+    max-width: 90vw;
+    left: auto !important;
+    right: auto !important;
+    margin: 0 !important;
+}
+
+/* Ajusta o posicionamento do dropdown para baixo */
+.select2-container--open.select2-container--below .select2-dropdown {
+    top: 100% !important;
+    bottom: auto !important;
+    margin-top: 4px !important;
+}
+
+/* Ajusta o posicionamento do dropdown para cima */
+.select2-container--open.select2-container--above .select2-dropdown {
+    top: auto !important;
+    bottom: 100% !important;
+    margin-bottom: 4px !important;
+}
+
+/* Ajusta o container do Select2 */
+.select2-container {
+    position: relative;
+    z-index: 1;
+}
+
+/* Ajusta o dropdown para telas pequenas */
+@media (max-width: 768px) {
+    .select2-dropdown {
+        position: fixed !important;
+        top: auto !important;
+        bottom: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        max-height: 50vh !important;
+        border-radius: 0.5rem 0.5rem 0 0 !important;
+        margin: 0 !important;
+    }
+    
+    .select2-container--open .select2-dropdown--below {
+        top: auto !important;
+        bottom: 0 !important;
+    }
+    
+    .select2-container--open .select2-dropdown--above {
+        bottom: 0 !important;
+        top: auto !important;
+    }
+}
+
+/* Garante que o dropdown fique visível */
+.select2-dropdown {
+    z-index: 99999 !important;
+    position: absolute !important;
+}

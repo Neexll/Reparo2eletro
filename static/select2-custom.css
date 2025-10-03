@@ -1,0 +1,175 @@
+/* Reset de estilos do Select2 */
+.select2-container {
+    box-sizing: border-box;
+    display: inline-block;
+    margin: 0;
+    position: relative;
+    vertical-align: middle;
+    width: 100% !important;
+    margin-bottom: 1rem;
+}
+
+/* Container do dropdown - POSIÇÃO FIXA PARA EVITAR CORTES */
+.select2-dropdown {
+    background-color: white;
+    border: 1px solid #e2e8f0 !important;
+    border-radius: 0.5rem !important;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05) !important;
+    display: block;
+    position: absolute;
+    left: -100000px;
+    width: 100%;
+    z-index: 9999 !important;
+    margin-top: 2px !important;
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+/* Container do dropdown quando aberto */
+.select2-container--open .select2-dropdown {
+    left: 0;
+    border-color: #4f46e5 !important;
+}
+
+/* Container do select */
+.select2-container--default .select2-selection--single {
+    background-color: #fff;
+    border: 1px solid #e2e8f0 !important;
+    border-radius: 0.5rem !important;
+    height: auto !important;
+    min-height: 38px;
+    padding: 0.375rem 2.5rem 0.375rem 0.75rem;
+}
+
+/* Texto selecionado */
+.select2-container--default .select2-selection--single .select2-selection__rendered {
+    color: #1e293b;
+    line-height: 1.5 !important;
+    padding: 0 !important;
+    height: 100%;
+    display: flex;
+    align-items: center;
+}
+
+/* Seta do dropdown */
+.select2-container--default .select2-selection--single .select2-selection__arrow {
+    height: 36px !important;
+    position: absolute;
+    top: 50%;
+    right: 8px;
+    transform: translateY(-50%);
+    width: 20px;
+}
+
+/* Container dos resultados */
+.select2-results > .select2-results__options {
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+/* Itens do dropdown */
+.select2-results__option {
+    padding: 0.5rem 1rem;
+    color: #1e293b;
+    transition: all 0.2s;
+}
+
+/* Item destacado */
+.select2-results__option--highlighted {
+    background-color: #4f46e5 !important;
+    color: white !important;
+}
+
+/* Campo de busca */
+.select2-search--dropdown {
+    padding: 0.75rem;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.select2-search--dropdown .select2-search__field {
+    width: 100% !important;
+    padding: 0.5rem 0.75rem !important;
+    border: 1px solid #e2e8f0 !important;
+    border-radius: 0.375rem !important;
+    font-size: 0.875rem;
+}
+
+/* Ajustes para o dropdown em diferentes contextos */
+.modal .select2-dropdown {
+    z-index: 1061 !important;
+}
+
+.card .select2-dropdown,
+.form-container .select2-dropdown {
+    position: fixed !important;
+    z-index: 1001 !important;
+}
+
+/* Ajuste para o container quando o dropdown está aberto */
+.select2-container--open .select2-dropdown--below {
+    margin-top: 2px !important;
+    top: 100% !important;
+}
+
+.select2-container--open .select2-dropdown--above {
+    margin-bottom: 2px !important;
+    bottom: 100% !important;
+}
+
+/* Ajuste para o dropdown em telas pequenas */
+@media (max-width: 768px) {
+    .select2-dropdown {
+        width: 100% !important;
+        max-width: 100% !important;
+        left: 0 !important;
+    }
+    
+    .select2-container--open .select2-dropdown {
+        position: fixed !important;
+        top: auto !important;
+        bottom: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        max-height: 50vh;
+        border-radius: 0.5rem 0.5rem 0 0 !important;
+        margin: 0 !important;
+    }
+    
+    .select2-dropdown--below {
+        top: auto !important;
+        bottom: 0 !important;
+    }
+    
+    .select2-dropdown--above {
+        bottom: 0 !important;
+        top: auto !important;
+    }
+}
+
+/* Ajuste para o dropdown em formulários */
+.form-container .select2-container {
+    z-index: auto !important;
+}
+
+/* Corrige o posicionamento em modais */
+body.modal-open .select2-container--open {
+    z-index: 9999 !important;
+}
+
+/* Ajuste para o dropdown em cards */
+.card .select2-container--open .select2-dropdown {
+    position: fixed !important;
+    z-index: 9999 !important;
+}
+
+/* Garante que o dropdown não fique atrás de outros elementos */
+.select2-container--open .select2-dropdown {
+    z-index: 9999 !important;
+    position: fixed !important;
+    left: 0 !important;
+    right: 0 !important;
+    margin: 0 auto !important;
+    max-width: 100% !important;
+    width: auto !important;
+    min-width: 200px;
+}

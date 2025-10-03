@@ -1,0 +1,149 @@
+/* Solução final para o posicionamento do Select2 */
+
+/* Remove todos os estilos de posicionamento existentes */
+.select2-container,
+.select2-dropdown,
+.select2-dropdown--below,
+.select2-dropdown--above,
+.select2-results__options,
+.select2-results__option {
+    all: unset !important;
+}
+
+/* Estilo base para o container do Select2 */
+.select2-container {
+    position: relative !important;
+    display: inline-block !important;
+    width: 100% !important;
+    margin: 0 0 1rem 0 !important;
+    box-sizing: border-box !important;
+    z-index: 1 !important;
+}
+
+/* Estilo para o select original (escondido) */
+.select2-container .select2-selection--single {
+    position: relative !important;
+    height: 38px !important;
+    border: 1px solid #e2e8f0 !important;
+    border-radius: 0.5rem !important;
+    padding: 0.375rem 2.5rem 0.375rem 0.75rem !important;
+    background-color: #fff !important;
+    cursor: pointer !important;
+    display: flex !important;
+    align-items: center !important;
+}
+
+/* Estilo para o texto selecionado */
+.select2-container .select2-selection__rendered {
+    display: block !important;
+    padding: 0 !important;
+    color: #1e293b !important;
+    line-height: 1.5 !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+    width: 100% !important;
+}
+
+/* Estilo para a seta do dropdown */
+.select2-container .select2-selection__arrow {
+    position: absolute !important;
+    top: 50% !important;
+    right: 8px !important;
+    width: 20px !important;
+    height: 20px !important;
+    transform: translateY(-50%) !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+/* Estilo para o dropdown */
+.select2-dropdown {
+    position: absolute !important;
+    left: 0 !important;
+    top: 100% !important;
+    width: 100% !important;
+    min-width: 200px !important;
+    max-width: 100% !important;
+    margin-top: 4px !important;
+    background: #fff !important;
+    border: 1px solid #e2e8f0 !important;
+    border-radius: 0.5rem !important;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05) !important;
+    z-index: 99999 !important;
+    overflow: hidden !important;
+}
+
+/* Estilo para os itens do dropdown */
+.select2-results__options {
+    max-height: 300px !important;
+    overflow-y: auto !important;
+    padding: 0.5rem 0 !important;
+    margin: 0 !important;
+    list-style: none !important;
+}
+
+/* Estilo para cada item do dropdown */
+.select2-results__option {
+    padding: 0.5rem 1rem !important;
+    color: #1e293b !important;
+    cursor: pointer !important;
+    transition: all 0.2s !important;
+}
+
+/* Estilo para o item destacado */
+.select2-results__option--highlighted {
+    background-color: #4f46e5 !important;
+    color: #fff !important;
+}
+
+/* Estilo para o campo de busca */
+.select2-search--dropdown {
+    padding: 0.75rem !important;
+    border-bottom: 1px solid #e2e8f0 !important;
+}
+
+.select2-search--dropdown .select2-search__field {
+    width: 100% !important;
+    padding: 0.5rem 0.75rem !important;
+    border: 1px solid #e2e8f0 !important;
+    border-radius: 0.375rem !important;
+    font-size: 0.875rem !important;
+    line-height: 1.5 !important;
+    box-sizing: border-box !important;
+}
+
+/* Ajustes para telas pequenas */
+@media (max-width: 768px) {
+    .select2-dropdown {
+        position: fixed !important;
+        top: auto !important;
+        bottom: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        max-height: 50vh !important;
+        border-radius: 0.5rem 0.5rem 0 0 !important;
+        margin: 0 !important;
+    }
+}
+
+/* Garante que o dropdown fique visível */
+.select2-container--open .select2-dropdown {
+    display: block !important;
+}
+
+/* Remove qualquer overflow que possa estar cortando o dropdown */
+body,
+html,
+.container,
+.row,
+.col,
+[class*="col-"],
+.card,
+.modal-content,
+.form-container {
+    overflow: visible !important;
+}

@@ -4,6 +4,7 @@ CREATE TABLE pedidos (
     id INTEGER PRIMARY KEY AUTOINCREMENT,  -- Identificador único do pedido
     numero_pedido TEXT NOT NULL,           -- Número do pedido (ex: RMA-2023-001)
     tecnico_nome TEXT NOT NULL,            -- Nome do técnico responsável
+    linha INTEGER CHECK(linha IN (1, 2, 3, 4)), -- Número da linha de produção (1-4)
     data_criacao TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP  -- Data de criação automática
 );
 

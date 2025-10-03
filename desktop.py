@@ -3,7 +3,7 @@ import webbrowser
 import os
 import sys
 import socket
-from app import app
+from app import app, init_db
 
 def get_local_ip():
     """Obtém o endereço IP local da máquina"""
@@ -27,8 +27,15 @@ def resource_path(relative_path):
     return os.path.join(base_path, relative_path)
 
 def run_app():
-    # Configura o servidor Flask para rodar apenas no localhost (127.0.0.1)
-    app.run(host='127.0.0.1', port=5000, debug=False, use_reloader=False)
+    # Configura o servidor Flask para rodar em todos os endereços de rede (0.0.0.0)
+    # Isso permite que o servidor seja acessado por outros dispositivos na rede local
+    
+    # Garante que o banco de dados esteja inicializado
+    with app.app_context():
+        init_db()
+    
+    # Inicia o servidor
+    app.run(host='0.0.0.0', port=5000, debug=False, use_reloader=False)
 
 def open_browser():
     # Aguarda um pouco para garantir que o servidor esteja rodando

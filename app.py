@@ -54,39 +54,76 @@ def index():
     db = get_db()
     search_numero = request.args.get('numero_pedido', '')
 
-    query = '''
-        SELECT p.id, p.numero_pedido, p.tecnico_nome, 
-               strftime('%d/%m/%Y %H:%M', datetime(p.data_criacao, 'localtime')) as data_formatada,
-               GROUP_CONCAT(i.nome, ', ') as itens_defeituosos
-        FROM pedidos p
-        LEFT JOIN pecas i ON p.id = i.pedido_id
-    '''
-    params = []
+    try:
+        # Primeiro, verifica se a tabela está vazia
+        count = db.execute('SELECT COUNT(*) FROM pedidos').fetchone()[0]
+        if count == 0:
+            db.close()
+            return render_template('index.html', pedidos=[])
 
-    if search_numero:
-        query += " WHERE p.numero_pedido LIKE ?"
-        params.append(f"%{search_numero}%")
+        # Constrói a consulta base
+        query = '''
+            SELECT p.id, p.numero_pedido, p.tecnico_nome, p.linha,
+                   strftime('%d/%m/%Y %H:%M', p.data_criacao) as data_formatada,
+                   (SELECT GROUP_CONCAT(nome, ', ') 
+                    FROM pecas 
+                    WHERE pedido_id = p.id) as itens_defeituosos
+            FROM pedidos p
+        '''
+        params = []
 
-    query += " GROUP BY p.id ORDER BY p.id DESC"
+        if search_numero:
+            query += " WHERE p.numero_pedido LIKE ?"
+            params.append(f"%{search_numero}%")
 
-    pedidos = db.execute(query, params).fetchall()
-    db.close()
-    return render_template('index.html', pedidos=pedidos)
+        query += " ORDER BY p.id DESC"
 
+        # Executa a consulta
+        pedidos = db.execute(query, params).fetchall()
+        
+        # Converte para uma lista de dicionários para facilitar o debug
+        pedidos_list = []
+        for p in pedidos:
+            pedido_dict = dict(p)
+            # Garante que itens_defeituosos não seja None
+            if pedido_dict['itens_defeituosos'] is None:
+                pedido_dict['itens_defeituosos'] = ''
+            pedidos_list.append(pedido_dict)
+        
+        return render_template('index.html', pedidos=pedidos_list)
+        
+    except Exception as e:
+        print(f"Erro ao buscar pedidos: {str(e)}")
+        # Em caso de erro, retorna uma lista vazia para evitar quebrar a página
+        return render_template('index.html', pedidos=[])
+    finally:
+        db.close()
+
+@app.route('/pedido/novo', methods=['GET', 'POST'])
 @app.route('/pedido/add', methods=['GET', 'POST'])
 def add_pedido():
     if request.method == 'POST':
         numero_pedido = request.form.get('numero_pedido', '').strip()
         tecnico_nome = request.form.get('tecnico_nome', '').strip()
+        linha = request.form.get('linha', '').strip()
 
-        if not numero_pedido or not tecnico_nome:
-            flash('Número do pedido and nome do técnico são obrigatórios.', 'error')
+        if not numero_pedido or not tecnico_nome or not linha:
+            flash('Número do pedido, nome do técnico e linha são obrigatórios.', 'error')
+            return redirect(url_for('add_pedido'))
+
+        try:
+            linha = int(linha)
+            if linha not in [1, 2, 3, 4]:
+                raise ValueError("Linha inválida")
+        except (ValueError, TypeError):
+            flash('Linha inválida. Por favor, selecione uma linha válida (1-4).', 'error')
             return redirect(url_for('add_pedido'))
 
         db = get_db()
         try:
             cursor = db.cursor()
-            cursor.execute('INSERT INTO pedidos (numero_pedido, tecnico_nome) VALUES (?, ?)', (numero_pedido, tecnico_nome))
+            cursor.execute('INSERT INTO pedidos (numero_pedido, tecnico_nome, linha) VALUES (?, ?, ?)', 
+                         (numero_pedido, tecnico_nome, linha))
             pedido_id = cursor.lastrowid
 
             # Processar peças adicionadas
@@ -107,10 +144,25 @@ def add_pedido():
         return redirect(url_for('add_pedido'))
 
     db = get_db()
-    tecnicos = db.execute('SELECT nome FROM tecnicos ORDER BY nome').fetchall()
-    tipos_pecas = db.execute('SELECT id, nome FROM tipos_pecas ORDER BY nome').fetchall()
-    db.close()
-    return render_template('add_pedido.html', tecnicos=tecnicos, tipos_pecas=tipos_pecas)
+    try:
+        # Verifica se existem técnicos cadastrados
+        tecnicos = db.execute('SELECT nome FROM tecnicos ORDER BY nome').fetchall()
+        if not tecnicos:
+            flash('É necessário cadastrar pelo menos um técnico antes de criar um pedido.', 'warning')
+            return redirect(url_for('manage_tecnicos'))
+            
+        # Verifica se existem tipos de peças cadastrados
+        tipos_pecas = db.execute('SELECT id, nome FROM tipos_pecas ORDER BY nome').fetchall()
+        if not tipos_pecas:
+            flash('É necessário cadastrar pelo menos um tipo de peça antes de criar um pedido.', 'warning')
+            return redirect(url_for('manage_pecas'))
+            
+        return render_template('add_pedido.html', tecnicos=tecnicos, tipos_pecas=tipos_pecas)
+    except Exception as e:
+        flash(f'Erro ao carregar o formulário: {str(e)}', 'error')
+        return redirect(url_for('index'))
+    finally:
+        db.close()
 
 @app.route('/pedido/<int:id>/edit', methods=['GET', 'POST'])
 def edit_pedido(id):
@@ -123,15 +175,25 @@ def edit_pedido(id):
     if request.method == 'POST':
         numero_pedido = request.form.get('numero_pedido', '').strip()
         tecnico_nome = request.form.get('tecnico_nome', '').strip()
+        linha = request.form.get('linha', '').strip()
 
-        if not numero_pedido or not tecnico_nome:
-            flash('Número do pedido e nome do técnico são obrigatórios.', 'error')
+        if not numero_pedido or not tecnico_nome or not linha:
+            flash('Número do pedido, nome do técnico e linha são obrigatórios.', 'error')
+            return redirect(url_for('edit_pedido', id=id))
+
+        try:
+            linha = int(linha)
+            if linha not in [1, 2, 3, 4]:
+                raise ValueError("Linha inválida")
+        except (ValueError, TypeError):
+            flash('Linha inválida. Por favor, selecione uma linha válida (1-4).', 'error')
             return redirect(url_for('edit_pedido', id=id))
 
         try:
             cursor = db.cursor()
             # Atualiza os detalhes do pedido
-            cursor.execute('UPDATE pedidos SET numero_pedido = ?, tecnico_nome = ? WHERE id = ?', (numero_pedido, tecnico_nome, id))
+            cursor.execute('UPDATE pedidos SET numero_pedido = ?, tecnico_nome = ?, linha = ? WHERE id = ?', 
+                         (numero_pedido, tecnico_nome, linha, id))
 
             # Deleta as peças antigas para reinserir as novas (abordagem mais simples)
             cursor.execute('DELETE FROM pecas WHERE pedido_id = ?', (id,))
@@ -204,6 +266,32 @@ def get_defeitos(peca_id):
         return jsonify(defeitos_lista)
     except Exception as e:
         print(f"Erro ao buscar defeitos: {e}")
+        return jsonify([])
+    finally:
+        db.close()
+
+# Rota para obter a lista de técnicos
+@app.route('/api/tecnicos')
+def api_tecnicos():
+    db = get_db()
+    try:
+        tecnicos = db.execute('SELECT id, nome FROM tecnicos ORDER BY nome').fetchall()
+        return jsonify([dict(t) for t in tecnicos])
+    except Exception as e:
+        print(f"Erro ao buscar técnicos: {e}")
+        return jsonify([])
+    finally:
+        db.close()
+
+# Rota para obter a lista de tipos de peças
+@app.route('/api/tipos-pecas')
+def api_tipos_pecas():
+    db = get_db()
+    try:
+        tipos = db.execute('SELECT id, nome FROM tipos_pecas ORDER BY nome').fetchall()
+        return jsonify([dict(t) for t in tipos])
+    except Exception as e:
+        print(f"Erro ao buscar tipos de peças: {e}")
         return jsonify([])
     finally:
         db.close()

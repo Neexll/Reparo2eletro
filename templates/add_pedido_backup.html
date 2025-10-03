@@ -14,15 +14,6 @@
     gap: 1.5rem;
 }
 
-/* Quando tem apenas 1 campo, limita a largura */
-.form-row:has(.form-group:only-child) {
-    grid-template-columns: 1fr 1fr;
-}
-
-.form-row .form-group:only-child {
-    grid-column: 1;
-}
-
 /* Peça Row - 3 colunas: Peça | Defeito | Botão */
 .peca-row {
     display: grid;
@@ -33,63 +24,15 @@
     background: #f8f9fa;
     border-radius: 0.5rem;
     margin-bottom: 1rem;
-    position: relative;
-    z-index: 1;
 }
 
 .peca-row .form-group {
     margin-bottom: 0;
-    position: relative;
 }
 
 .remove-peca-btn {
     height: 38px;
     padding: 0 1rem;
-}
-
-/* Select2 positioning fixes - FORÇA O POSICIONAMENTO CORRETO */
-.select2-container {
-    width: 100% !important;
-}
-
-.select2-container--open {
-    z-index: 9999 !important;
-}
-
-/* IMPORTANTE: Remove todos os estilos de posicionamento padrão */
-.select2-dropdown {
-    position: fixed !important;
-    z-index: 999999 !important;
-    margin: 0 !important;
-    transform: none !important;
-}
-
-.select2-container--bootstrap-5 .select2-dropdown {
-    border-color: #dee2e6;
-}
-
-/* Garante que todos os containers permitam overflow */
-.card,
-.form-container,
-.pecas-section,
-.form-row,
-.peca-row,
-.form-group {
-    overflow: visible !important;
-}
-
-/* Ajusta o posicionamento do Select2 para aparecer logo abaixo do campo */
-.select2-container--bootstrap-5 .select2-selection {
-    position: relative;
-}
-
-/* Remove qualquer estilo conflitante dos arquivos CSS globais */
-.select2-container--open .select2-dropdown {
-    position: fixed !important;
-    top: auto !important;
-    left: auto !important;
-    bottom: auto !important;
-    right: auto !important;
 }
 
 /* Responsive */
@@ -132,19 +75,6 @@
                     </select>
                 </div>
             </div>
-            
-            <div class="form-row">
-                <div class="form-group">
-                    <label for="linha"><i class="fas fa-list-ol"></i> Linha de Produção</label>
-                    <select name="linha" id="linha" class="form-select" required>
-                        <option value="" disabled selected>Selecione a linha...</option>
-                        <option value="1">Linha 1</option>
-                        <option value="2">Linha 2</option>
-                        <option value="3">Linha 3</option>
-                        <option value="4">Linha 4</option>
-                    </select>
-                </div>
-            </div>
 
             <hr>
 
@@ -160,8 +90,6 @@
                 <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Salvar Pedido e Peças</button>
             </div>
         </form>
-    </div>
-
     <!-- Template para uma nova linha de peça -->
     <template id="peca-template">
         <div class="peca-row">
@@ -183,6 +111,7 @@
             <button type="button" class="btn btn-danger remove-peca-btn"><i class="fas fa-trash-alt"></i></button>
         </div>
     </template>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     <script>
         // Variáveis globais
         let pecasContainer;
@@ -191,67 +120,32 @@
 
         // Função para inicializar a página
         function initPage() {
-            console.log('initPage chamada');
-            console.log('jQuery disponível:', typeof $ !== 'undefined');
-            console.log('Select2 disponível:', typeof $.fn.select2 !== 'undefined');
-            
             pecasContainer = document.getElementById('pecas-container');
             addPecaBtn = document.getElementById('add-peca-btn');
             pecaTemplate = document.getElementById('peca-template');
 
-            // Verifica se jQuery está disponível
-            if (typeof $ === 'undefined') {
-                console.error('jQuery não está carregado!');
-                return;
-            }
-
-            // Verifica se Select2 está disponível
-            if (typeof $.fn.select2 === 'undefined') {
-                console.error('Select2 não está carregado!');
-                return;
-            }
-
             // Inicializa o Select2 para o campo de técnico
-            try {
-                $('#tecnico_nome').select2({
-                    theme: 'bootstrap-5',
-                    placeholder: 'Selecione ou digite o nome do técnico',
-                    allowClear: true,
-                    tags: true,
-                    width: '100%',
-                    createTag: function (params) {
-                        return {
-                            id: params.term,
-                            text: params.term,
-                            newOption: true
-                        }
-                    },
-                    templateResult: function (data) {
-                        var $result = $("<span></span>");
-                        $result.text(data.text);
-                        if (data.newOption) {
-                            $result.append(" <em class='text-muted'>(novo)</em>");
-                        }
-                        return $result;
+            $('#tecnico_nome').select2({
+                theme: 'bootstrap-5',
+                placeholder: 'Selecione ou digite o nome do técnico',
+                allowClear: true,
+                tags: true,
+                createTag: function (params) {
+                    return {
+                        id: params.term,
+                        text: params.term,
+                        newOption: true
                     }
-                });
-                console.log('Select2 inicializado para técnico');
-            } catch (error) {
-                console.error('Erro ao inicializar Select2 para técnico:', error);
-            }
-
-            // Inicializa o Select2 para o campo de linha
-            try {
-                $('#linha').select2({
-                    theme: 'bootstrap-5',
-                    placeholder: 'Selecione a linha',
-                    allowClear: true,
-                    width: '100%'
-                });
-                console.log('Select2 inicializado para linha');
-            } catch (error) {
-                console.error('Erro ao inicializar Select2 para linha:', error);
-            }
+                },
+                templateResult: function (data) {
+                    var $result = $("<span></span>");
+                    $result.text(data.text);
+                    if (data.newOption) {
+                        $result.append(" <em class='text-muted'>(novo)</em>");
+                    }
+                    return $result;
+                }
+            });
 
             // Adiciona a primeira linha de peça
             addPecaRow();
@@ -268,63 +162,6 @@
                     return false;
                 }
             });
-            
-            // Fix para posicionamento correto do dropdown do Select2
-            let currentOpenSelect = null;
-            
-            $(document).on('select2:open', function(e) {
-                // Pega o elemento select que foi aberto
-                currentOpenSelect = $(e.target);
-                
-                function positionDropdown() {
-                    const $dropdown = $('.select2-dropdown');
-                    
-                    if (currentOpenSelect && currentOpenSelect.length && $dropdown.length) {
-                        // Pega a posição do container do Select2 (não do select original)
-                        const $container = currentOpenSelect.data('select2').$container;
-                        if ($container && $container.length) {
-                            const selectRect = $container[0].getBoundingClientRect();
-                            const dropdown = $dropdown[0];
-                            
-                            // Usa setProperty com 'important' para forçar os estilos
-                            if (dropdown) {
-                                dropdown.style.setProperty('position', 'fixed', 'important');
-                                dropdown.style.setProperty('top', (selectRect.bottom + 2) + 'px', 'important');
-                                dropdown.style.setProperty('left', selectRect.left + 'px', 'important');
-                                dropdown.style.setProperty('width', selectRect.width + 'px', 'important');
-                                dropdown.style.setProperty('z-index', '999999', 'important');
-                                dropdown.style.setProperty('max-height', '300px', 'important');
-                                dropdown.style.setProperty('margin', '0', 'important');
-                                dropdown.style.setProperty('transform', 'none', 'important');
-                                dropdown.style.setProperty('bottom', 'auto', 'important');
-                                dropdown.style.setProperty('right', 'auto', 'important');
-                                
-                                console.log('Dropdown posicionado em:', {
-                                    top: selectRect.bottom + 2,
-                                    left: selectRect.left,
-                                    width: selectRect.width
-                                });
-                            }
-                        }
-                    }
-                }
-                
-                // Posiciona imediatamente e depois com delay
-                positionDropdown();
-                setTimeout(positionDropdown, 1);
-                setTimeout(positionDropdown, 50);
-                
-                // Reposiciona durante scroll e resize
-                $(window).on('scroll.select2', positionDropdown);
-                $(window).on('resize.select2', positionDropdown);
-            });
-            
-            $(document).on('select2:close', function() {
-                currentOpenSelect = null;
-                $(window).off('scroll.select2');
-                $(window).off('resize.select2');
-            });
-            
             // Validação do formulário
             const form = document.querySelector('form');
             if (form) {
@@ -349,10 +186,8 @@
             
             // Função para inicializar o Select2 para um campo de peça
             function initPecaSelect(select) {
-                console.log('Inicializando Select2 para peça');
                 $(select).select2({
                     theme: 'bootstrap-5',
-                    placeholder: 'Selecione ou digite a peça',
                     allowClear: true,
                     tags: true,
                     width: '100%',
@@ -381,7 +216,6 @@
                         return data.text;
                     }
                 });
-                console.log('Select2 para peça inicializado');
             }
             
             // Função para inicializar o Select2 para um campo de defeito
@@ -536,11 +370,8 @@
             return true;
         }
 
-        // Inicializa a página quando o DOM e jQuery estiverem prontos
-        $(document).ready(function() {
-            console.log('Document ready');
-            initPage();
-        });
+        // Inicializa a página quando o DOM estiver pronto
+        document.addEventListener('DOMContentLoaded', initPage);
     </script>
 
 {% endblock %}

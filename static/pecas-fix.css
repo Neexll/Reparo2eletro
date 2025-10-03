@@ -1,0 +1,93 @@
+/* Estilo para o container de peças */
+.pecas-section {
+    margin-top: 1.5rem;
+    padding: 1rem;
+    background-color: #f8fafc;
+    border-radius: var(--border-radius);
+    border: 1px solid var(--color-border);
+}
+
+.pecas-section h4 {
+    margin-bottom: 1rem;
+    color: var(--color-text);
+    font-size: 1.1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+/* Estilo para cada linha de peça */
+.peca-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr auto;
+    gap: 1rem;
+    align-items: flex-end;
+    margin-bottom: 1rem;
+    padding: 0.75rem;
+    background-color: white;
+    border-radius: var(--border-radius);
+    border: 1px solid var(--color-border);
+}
+
+/* Ajusta o botão de remover peça */
+.remove-peca-btn {
+    height: 38px;
+    min-width: 38px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    margin-bottom: 0.5rem;
+}
+
+/* Ajusta o botão de adicionar peça */
+#add-peca-btn {
+    margin-top: 0.5rem;
+}
+
+/* Ajusta os selects dentro do container de peças */
+.pecas-section .form-group {
+    margin-bottom: 0;
+}
+
+/* Remove margens extras */
+.pecas-section .form-group label {
+    margin-bottom: 0.25rem;
+    font-size: 0.875rem;
+}
+
+/* Ajusta o container principal do formulário */
+.form-container {
+    padding: 1.5rem;
+}
+
+/* Ajusta o espaçamento entre as seções */
+hr {
+    margin: 1.5rem 0;
+    border: 0;
+    border-top: 1px solid var(--color-border);
+}
+
+/* Ajusta o container principal */
+.card {
+    overflow: visible;
+    padding: 0;
+}
+
+/* Ajusta o container do formulário */
+.form-container {
+    padding: 1.5rem;
+}
+
+/* Ajusta o grid para telas menores */
+@media (max-width: 768px) {
+    .peca-row {
+        grid-template-columns: 1fr;
+        gap: 0.75rem;
+    }
+    
+    .remove-peca-btn {
+        width: 100%;
+        margin-top: 0.5rem;
+    }
+}

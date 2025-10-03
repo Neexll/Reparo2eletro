@@ -496,6 +496,102 @@ select:focus {
     margin-bottom: 1rem;
 }
 
+/* Container principal do dropdown */
+.select2-dropdown {
+    border: 1px solid var(--color-border) !important;
+    border-radius: var(--border-radius) !important;
+    box-shadow: var(--shadow-md) !important;
+    z-index: 9999 !important; /* Garante que fique acima de tudo */
+    position: absolute !important;
+}
+
+/* Container do select2 quando está aberto */
+.select2-container--open .select2-dropdown {
+    border-color: var(--color-primary) !important;
+}
+
+/* Estilo para os itens do dropdown */
+.select2-results__option {
+    padding: 0.5rem 1rem;
+    color: var(--color-text);
+}
+
+/* Item destacado ao passar o mouse */
+.select2-results__option--highlighted {
+    background-color: var(--color-primary) !important;
+    color: white !important;
+}
+
+/* Campo de busca no dropdown */
+.select2-search--dropdown {
+    padding: 0.5rem;
+}
+
+.select2-search--dropdown input {
+    border: 1px solid var(--color-border) !important;
+    border-radius: 0.25rem !important;
+    padding: 0.375rem 0.75rem !important;
+}
+
+/* Container do select */
+.select2-container .select2-selection--single {
+    height: 38px !important;
+    border: 1px solid var(--color-border) !important;
+    border-radius: var(--border-radius) !important;
+    padding: 0.375rem 0.75rem !important;
+}
+
+/* Texto selecionado */
+.select2-container--default .select2-selection--single .select2-selection__rendered {
+    line-height: 1.5 !important;
+    padding: 0 !important;
+}
+
+/* Seta do dropdown */
+.select2-container--default .select2-selection--single .select2-selection__arrow {
+    height: 36px !important;
+    right: 5px !important;
+}
+
+/* Dropdown aberto */
+.select2-container--open .select2-dropdown {
+    margin-top: 5px !important;
+    border-radius: var(--border-radius) !important;
+}
+
+/* Ajuste para o container do dropdown */
+.select2-container {
+    position: relative;
+    z-index: 1;
+}
+
+/* Corrige o posicionamento do dropdown para cima */
+.select2-container--below .select2-dropdown {
+    top: 100% !important;
+    bottom: auto !important;
+}
+
+.select2-container--above .select2-dropdown {
+    bottom: 100% !important;
+    top: auto !important;
+    margin-bottom: 5px !important;
+}
+
+/* Ajuste para o container do select2 em modais ou outros elementos com overflow */
+.modal .select2-dropdown {
+    z-index: 1060 !important; /* Acima do modal */
+}
+
+/* Ajuste para o container do select2 em cards */
+.card .select2-dropdown {
+    z-index: 1001 !important; /* Acima do card */
+}
+
+/* Ajuste para o container do select2 no formulário */
+.form-container .select2-dropdown {
+    z-index: 1002 !important; /* Acima do formulário */
+}
+
 .select2-container--default .select2-selection--single {
     height: 38px;
     padding: 0.375rem 0.75rem;

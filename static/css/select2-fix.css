@@ -1,0 +1,54 @@
+/* Estilos simplificados para o Select2 */
+
+/* Garante que o dropdown fique visível */
+.select2-container--open .select2-dropdown {
+    z-index: 999999 !important;
+    position: absolute !important;
+    width: auto !important;
+    min-width: 100%;
+    border: 1px solid #ced4da !important;
+    border-radius: 0.375rem !important;
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1) !important;
+}
+
+/* Corrige o posicionamento do container */
+.select2-container {
+    position: relative !important;
+    z-index: 1 !important;
+    width: 100% !important;
+}
+
+/* Corrige o estilo do select */
+.select2-container--default .select2-selection--single {
+    height: auto !important;
+    min-height: 38px;
+    padding: 0.375rem 2.25rem 0.375rem 0.75rem !important;
+    font-size: 1rem;
+    line-height: 1.5;
+    border: 1px solid #ced4da !important;
+    border-radius: 0.375rem !important;
+    background-color: #fff !important;
+}
+
+/* Corrige o texto do select */
+.select2-container--default .select2-selection--single .select2-selection__rendered {
+    line-height: 1.5 !important;
+    padding: 0 !important;
+    color: #212529 !important;
+}
+
+/* Corrige a seta do select */
+.select2-container--default .select2-selection--single .select2-selection__arrow {
+    height: 100% !important;
+    right: 8px !important;
+}
+
+/* Corrige o dropdown quando aberto */
+.select2-container--open .select2-dropdown--below {
+    margin-top: 5px !important;
+}
+
+/* Corrige o z-index do container quando aberto */
+.select2-container--open {
+    z-index: 999999 !important;
+}

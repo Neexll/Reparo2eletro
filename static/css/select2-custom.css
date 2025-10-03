@@ -1,0 +1,116 @@
+/* Estilos personalizados para o Select2 */
+
+/* Garante que o dropdown do Select2 fique acima de outros elementos */
+.select2-container--open .select2-dropdown {
+    z-index: 100000 !important;
+    position: absolute !important;
+    width: 100% !important;
+    border: 1px solid #ced4da !important;
+    border-radius: 0.375rem !important;
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1) !important;
+    background-color: #fff !important;
+}
+
+/* Corrige o posicionamento do dropdown */
+.select2-container {
+    z-index: 9999 !important;
+    position: relative !important;
+    width: 100% !important;
+}
+
+/* Estilo para o container do Select2 */
+.select2-container--default .select2-selection--single {
+    min-height: 38px !important;
+    height: auto !important;
+    padding: 0.375rem 0.75rem !important;
+    font-size: 1rem !important;
+    line-height: 1.5 !important;
+    border: 1px solid #ced4da !important;
+    border-radius: 0.375rem !important;
+    background-color: #fff !important;
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out !important;
+}
+
+/* Estilo para o texto exibido no Select2 */
+.select2-container--default .select2-selection--single .select2-selection__rendered {
+    line-height: 1.5 !important;
+    padding: 0 !important;
+    color: #212529 !important;
+}
+
+/* Estilo para a seta do Select2 */
+.select2-container--default .select2-selection--single .select2-selection__arrow {
+    height: 100% !important;
+    right: 8px !important;
+}
+
+/* Estilo para o dropdown aberto */
+.select2-dropdown {
+    z-index: 100000 !important;
+    border: 1px solid #ced4da !important;
+    border-radius: 0.375rem !important;
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1) !important;
+    background-color: #fff !important;
+}
+
+/* Estilo para os itens do dropdown */
+.select2-results__option {
+    padding: 0.5rem 1rem !important;
+}
+
+/* Estilo para o item destacado no dropdown */
+.select2-container--default .select2-results__option--highlighted[aria-selected] {
+    background-color: #f8f9fa !important;
+    color: #212529 !important;
+}
+
+/* Estilo para o item selecionado no dropdown */
+.select2-container--default .select2-results__option[aria-selected=true] {
+    background-color: #e9ecef !important;
+    color: #212529 !important;
+}
+
+/* Corrige o posicionamento do dropdown quando aberto */
+.select2-container--open .select2-dropdown--below {
+    margin-top: 5px !important;
+}
+
+/* Corrige o posicionamento do dropdown quando aberto para cima */
+.select2-container--open .select2-dropdown--above {
+    margin-bottom: 5px !important;
+}
+
+/* Corrige o z-index do container do Select2 quando aberto */
+.select2-container--open {
+    z-index: 100001 !important;
+}
+
+/* Corrige o posicionamento do dropdown em modais */
+.modal-open .select2-container {
+    z-index: 1051 !important;
+}
+
+.modal-open .select2-dropdown {
+    z-index: 1052 !important;
+}
+
+/* Corrige o posicionamento do dropdown em elementos com overflow */
+.select2-container--open .select2-dropdown {
+    position: absolute !important;
+    left: 0 !important;
+    width: 100% !important;
+}
+
+/* Corrige o posicionamento do dropdown em elementos com position: relative */
+.select2-container--default .select2-selection--single .select2-selection__arrow b {
+    border-color: #6c757d transparent transparent transparent !important;
+    border-width: 6px 6px 0 6px !important;
+    margin-top: -3px !important;
+    margin-left: -6px !important;
+}
+
+.select2-container--default.select2-container--open .select2-selection--single .select2-selection__arrow b {
+    border-color: transparent transparent #6c757d transparent !important;
+    border-width: 0 6px 6px 6px !important;
+    margin-top: -3px !important;
+}
